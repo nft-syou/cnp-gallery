@@ -18,6 +18,9 @@ dist/
 .env
 .env.local
 
+# Generated (do not commit)
+migrations/seed.sql
+
 # OS / editor
 .DS_Store
 *.log
