@@ -19,6 +19,7 @@
     "recharts": "^3.9.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260628.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20.19.43",
     "@types/react": "^19",
