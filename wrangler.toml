@@ -1,0 +1,21 @@
+name = "cnp-gallery"
+compatibility_date = "2025-03-01"
+compatibility_flags = ["nodejs_compat"]
+main = ".open-next/worker.js"
+
+# NOTE: database_id is a placeholder for local dev (`wrangler ... --local`).
+# Before deploying remotely, run `npx wrangler d1 create cnp-gallery` and
+# replace the placeholder below with the real database_id it prints.
+[[d1_databases]]
+binding = "DB"
+database_name = "cnp-gallery"
+database_id = "local-dev-placeholder"
+
+[[queues.producers]]
+binding = "SYNC_QUEUE"
+queue = "cnp-sync"
+
+[[queues.consumers]]
+queue = "cnp-sync"
+max_batch_size = 10
+max_retries = 5
