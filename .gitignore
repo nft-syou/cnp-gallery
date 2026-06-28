@@ -1,0 +1,23 @@
+# Brainstorm mockups (visual companion)
+.superpowers/
+
+# Dependencies
+node_modules/
+
+# Next.js / build
+.next/
+.open-next/
+out/
+dist/
+
+# Cloudflare
+.wrangler/
+.dev.vars
+
+# Env
+.env
+.env.local
+
+# OS / editor
+.DS_Store
+*.log
