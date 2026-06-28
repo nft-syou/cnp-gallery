@@ -24,7 +24,7 @@ const BATCH = 50;
 for (let i = 0; i < tokens.length; i += BATCH) {
   const chunk = tokens.slice(i, i + BATCH);
   const values = chunk.map((t) =>
-    "(" + COLS.map((c) => esc((t as Record<string, string | number>)[c])).join(",") + ")"
+    "(" + COLS.map((c) => esc((t as unknown as Record<string, string | number>)[c])).join(",") + ")"
   ).join(",\n");
   lines.push(`INSERT INTO tokens (${COLS.join(",")}) VALUES\n${values};`);
 }
