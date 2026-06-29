@@ -25,8 +25,17 @@ import doShardedTagCache from "@opennextjs/cloudflare/overrides/tag-cache/do-sha
 // from the incremental cache at the routing layer, skipping a full server render
 // — the speed-first win. It must be false only when PPR is used; this app does
 // not use PPR, so we enable it.
-export default defineCloudflareConfig({
+const config = defineCloudflareConfig({
   incrementalCache: r2IncrementalCache,
   tagCache: doShardedTagCache,
   enableCacheInterception: true,
 });
+
+// Next 16 defaults `next build` to Turbopack, whose output OpenNext 1.20 cannot
+// bundle correctly for the Workers runtime — it fails at runtime with
+// `ChunkLoadError` / `components.ComponentMod.handler is not a function` (every
+// route 500s). Force the webpack builder so OpenNext gets the .next layout it
+// expects. OpenNext sets NEXT_PRIVATE_STANDALONE so standalone output is still produced.
+config.buildCommand = "npx next build --webpack";
+
+export default config;
