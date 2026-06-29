@@ -31,7 +31,7 @@
   - カラム: `tokenId, name, description, image, NINJUTSU, WEAPON(BACK), CHARACTER, CLAN, COSPLAY, ACCESSORIES(BODY), ACCESSORIES(HEAD), ACCESSORIES(FACE), WEAPON(FRONT), MOKUTON, KATON, DOTON, KINTON, SUITON`
 - **対象**: リビール済みのみ＝トレイトが埋まっている **22,222件**。
   - 除外: NINJUTSU 等が空の「リビール待ち」2,222件（tokenId 26667〜28888、画像が `*_reveal.gif`）。
-  - 欠番（バーン済み 4,443件、`burned-tokens.csv`）は CSV に存在しないため自然に除外される。
+  - 欠番（バーン済み 4,444件、`burned-tokens.csv`）は CSV に存在しないため自然に除外される。
 - **メタデータAPI（同期のソース・オブ・トゥルース）**: `https://data.cryptoninjapartners.com/new/json/{tokenId}.json`（現在＝バー忍反映後のメタデータを返す）
 - **画像オリジン**: CSV の `image` 列の URL（リビール済みは `https://data.cryptoninjapartners.com/images/{tokenId}.png` 形式）
 
@@ -43,7 +43,7 @@
 | NINJUTSU | ~37 |
 | WEAPON(BACK) | ~42 |
 | WEAPON(FRONT) | ~64 |
-| COSPLAY | ~311（多い → 検索可能なリスト/折りたたみ） |
+| COSPLAY | ~311（値が多い） |
 | ACCESSORIES(BODY) | ~61 |
 | ACCESSORIES(HEAD) | ~47 |
 | ACCESSORIES(FACE) | ~32 |
@@ -69,7 +69,7 @@
 ```
                 ┌─────────────────────────── Cloudflare ───────────────────────────┐
  ブラウザ ──▶  Worker (Next.js / OpenNext)                                          │
-                │  - / (ギャラリー一覧: Server Component, URLクエリでフィルタ)        │
+                │  - / (ギャラリー一覧: Server Component, URLクエリでフィルター)        │
                 │  - /token/[id] (詳細: SSR + キャッシュ)                            │
                 │  - Route Handler /api/tokens (追加読み込み JSON)                   │
                 │  - Route Handler /api/tokens/[id]/refresh (更新ボタン → enqueue)   │
@@ -144,7 +144,7 @@ CREATE INDEX idx_acc_face     ON tokens(acc_face);
   3. カラム名を D1 スキーマにマッピング（`WEAPON(BACK)` → `weapon_back` など）
   4. `INSERT` をバッチ（D1 batch API）で投入
 - 実行タイミング: 初回セットアップ時、および必要に応じて手動再シード。
-- **テスト対象**: CSV→行オブジェクトの変換、リビール判定、カラムマッピング。
+- テスト対象 → §12（テスト戦略）参照。
 
 ---
 
@@ -177,7 +177,7 @@ CREATE INDEX idx_acc_face     ON tokens(acc_face);
 - 大判画像（Image Transformations）、name、全カテゴリトレイト一覧。
 - 5遁術を**レーダーチャート**で可視化（+ 数値）。
 - **OGP / Twitter Card** 対応（画像・名前）。
-- **「更新」ボタン**: 押下で同期をトリガー（§9）。押下後は「更新リクエストを受付けました。反映まで少々お待ちください」を表示し、完了後の再アクセスで最新表示。
+- **「更新」ボタン**: 押下で同期をトリガー（§9）。押下後は「更新リクエストを受け付けました。反映まで少々お待ちください」を表示し、完了後の再アクセスで最新表示。
 - 存在しない / リビール待ち ID は 404。
 
 ---
@@ -201,7 +201,7 @@ CREATE INDEX idx_acc_face     ON tokens(acc_face);
 - **非同期 UX**: ボタンは即応答。反映は次回アクセス時。
 - **リトライ**: 取得失敗時は Queue のリトライに委ねる。
 - **レート制御**: Queue のバッチ設定で外部APIへの負荷を抑制。
-- **テスト対象**: JSON→D1 差分判定、UPDATE 生成、無効化呼び出し。
+- テスト対象 → §12（テスト戦略）参照。
 
 ---
 
@@ -212,14 +212,14 @@ CREATE INDEX idx_acc_face     ON tokens(acc_face);
 - 提供幅の例: 一覧サムネ `160 / 240 / 320`、詳細 `640 / 1024`（`srcset`/`sizes`）。
 - 長期 `Cache-Control` でエッジ・ブラウザキャッシュ。フォールド下は遅延読み込み。
 - 前提: Cloudflare ゾーンで Image Transformations を有効化。
-- **テスト対象**: ローダーの URL 生成ロジック。
+- テスト対象 → §12（テスト戦略）参照。
 
 ---
 
 ## 11. UI / UX
 
 - **レイアウト**: A案＝左サイドバー型（左にフィルター常設、右にグリッド）。
-- **トンマナ**: CNPブランド寄りのポップ（明るい配色・丸み）。CLAN を色タグで表現。
+- **トンマナ**: CLAN を色タグで表現（ポップな配色・丸みは §3 参照）。
 - **グリッドカード**: 画像（正方形）＋ name ＋ token ID ＋ CLAN タグ。
 - **レスポンシブ**: モバイルではサイドバーをドロワー化、グリッド列数を縮小。
 - 参考モック: `.superpowers/brainstorm/` に保存済み（`layout-v2.html`）。
@@ -249,10 +249,7 @@ CREATE INDEX idx_acc_face     ON tokens(acc_face);
 ---
 
 ## 13. 未確定 / 後続検討事項
-- スタイリング手段（Tailwind 等）の最終確定。
 - COSPLAY など多値カテゴリのファセット UI 詳細（検索/上位表示の閾値）。
-- レーダーチャート描画ライブラリの選定（軽量・SSR親和）。
-- ファセット件数のクエリ最適化（必要になれば集計テーブル化）。
 - 詳細ページ「更新」完了をユーザーに知らせる手段（ポーリング/トースト等）の詳細。
 
 ---

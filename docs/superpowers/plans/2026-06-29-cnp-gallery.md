@@ -28,7 +28,7 @@
 |---|---|
 | `package.json`, `next.config.ts`, `tsconfig.json`, `vitest.config.ts` | Project + tooling config |
 | `wrangler.toml`, `open-next.config.ts` | Cloudflare bindings (D1, Queue) + OpenNext |
-| `tailwind.config.ts`, `app/globals.css` | Styling + CNP pop theme tokens |
+| `tailwind.config.ts`, `src/app/globals.css` | Styling + CNP pop theme tokens |
 | `migrations/0001_init.sql` | D1 schema + indexes |
 | `src/lib/fields.ts` | Single source of truth for field lists + CSV→DB mapping |
 | `src/lib/csv.ts` | CSV row → token object; reveal filter (pure, tested) |
@@ -43,10 +43,10 @@
 | `src/components/FilterSidebar.tsx`, `FacetGroup.tsx`, `StatRangeFilter.tsx` | Filter UI |
 | `src/components/StatRadar.tsx` | Recharts radar (client) |
 | `src/components/RefreshButton.tsx` | Enqueue sync (client) |
-| `app/page.tsx` | Gallery page (Server Component) |
-| `app/token/[id]/page.tsx` | Detail page + OGP |
-| `app/api/tokens/route.ts` | Load-more JSON |
-| `app/api/tokens/[id]/refresh/route.ts` | Enqueue refresh |
+| `src/app/page.tsx` | Gallery page (Server Component) |
+| `src/app/token/[id]/page.tsx` | Detail page + OGP |
+| `src/app/api/tokens/route.ts` | Load-more JSON |
+| `src/app/api/tokens/[id]/refresh/route.ts` | Enqueue refresh |
 | `src/queue/consumer.ts` | Queue consumer handler |
 
 ---
@@ -62,7 +62,7 @@ Run:
 ```bash
 npx create-next-app@latest . --ts --app --tailwind --eslint --src-dir --import-alias "@/*" --no-turbopack --use-npm --yes
 ```
-Expected: project files generated under `app/` and `src/`. If it refuses due to the existing `docs/`/`.git`, scaffold in a temp dir and copy in, preserving `docs/` and `.gitignore`.
+Expected: project files generated under `src/` (App Router at `src/app/`). If it refuses due to the existing `docs/`/`.git`, scaffold in a temp dir and copy in, preserving `docs/` and `.gitignore`.
 
 - [ ] **Step 2: Add Cloudflare + test deps**
 
@@ -742,7 +742,7 @@ export async function totalCount(f: Filters): Promise<number> {
 }
 ```
 
-> `D1Database` / `Queue` types come from `@cloudflare/workers-types`. Add it: `npm i -D @cloudflare/workers-types` and include `"types": ["@cloudflare/workers-types"]` in `tsconfig.json` `compilerOptions`.
+> `D1Database` / `Queue` types come from `@cloudflare/workers-types` (installed in Step 2).
 
 - [ ] **Step 2: Add workers types**
 
@@ -764,7 +764,7 @@ git add -A && git commit -m "feat: add D1 accessor and typed query helpers"
 ## Task 11: Tailwind CNP theme + TokenCard
 
 **Files:**
-- Modify: `tailwind.config.ts`, `app/globals.css`
+- Modify: `tailwind.config.ts`, `src/app/globals.css`
 - Create: `src/components/TokenCard.tsx`
 
 - [ ] **Step 1: Add CNP palette to `tailwind.config.ts`**
@@ -821,7 +821,7 @@ git add -A && git commit -m "feat: add CNP theme tokens and TokenCard"
 
 **Files:**
 - Create: `src/components/GalleryGrid.tsx`, `src/components/FilterSidebar.tsx`, `src/components/FacetGroup.tsx`, `src/components/StatRangeFilter.tsx`
-- Modify: `app/page.tsx`
+- Modify: `src/app/page.tsx`
 
 - [ ] **Step 1: Implement `GalleryGrid.tsx` (server, renders cards + load-more link)**
 ```tsx
@@ -942,7 +942,7 @@ export function FilterSidebar({ facets, filters }:
 }
 ```
 
-- [ ] **Step 5: Implement `app/page.tsx`**
+- [ ] **Step 5: Implement `src/app/page.tsx`**
 ```tsx
 import { parseFilters } from "@/lib/filters";
 import { listTokens, facets, totalCount } from "@/lib/db";
@@ -1001,9 +1001,9 @@ git add -A && git commit -m "feat: gallery page with grid, facet sidebar, stat f
 ## Task 13: Load-more JSON route + token search route
 
 **Files:**
-- Create: `app/api/tokens/route.ts`, `app/token/route.ts`
+- Create: `src/app/api/tokens/route.ts`, `src/app/token/route.ts`
 
-- [ ] **Step 1: Implement `app/api/tokens/route.ts`**
+- [ ] **Step 1: Implement `src/app/api/tokens/route.ts`**
 ```ts
 import { NextRequest, NextResponse } from "next/server";
 import { parseFilters } from "@/lib/filters";
@@ -1017,7 +1017,7 @@ export async function GET(req: NextRequest) {
 }
 ```
 
-- [ ] **Step 2: Implement `app/token/route.ts` (search box redirect → /token/[id])**
+- [ ] **Step 2: Implement `src/app/token/route.ts` (search box redirect → /token/[id])**
 ```ts
 import { NextRequest, NextResponse } from "next/server";
 
@@ -1044,7 +1044,7 @@ git add -A && git commit -m "feat: add load-more API and token search redirect"
 
 **Files:**
 - Create: `src/components/StatRadar.tsx`, `src/lib/stats.ts`, `src/lib/stats.test.ts`
-- Create: `app/token/[id]/page.tsx`
+- Create: `src/app/token/[id]/page.tsx`
 
 - [ ] **Step 1: Write the failing test for radar data shaping**
 
@@ -1107,7 +1107,7 @@ export function StatRadar({ data }: { data: { stat: string; value: number }[] })
 }
 ```
 
-- [ ] **Step 6: Implement `app/token/[id]/page.tsx`**
+- [ ] **Step 6: Implement `src/app/token/[id]/page.tsx`**
 ```tsx
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -1259,10 +1259,10 @@ git add -A && git commit -m "feat: add metadata sync diff logic"
 ## Task 16: Refresh route + Queue consumer + cache invalidation
 
 **Files:**
-- Create: `app/api/tokens/[id]/refresh/route.ts`, `src/components/RefreshButton.tsx`, `src/queue/consumer.ts`
-- Modify: `app/page.tsx`, `app/token/[id]/page.tsx` (cache tags), `open-next.config.ts` / worker entry for the consumer
+- Create: `src/app/api/tokens/[id]/refresh/route.ts`, `src/components/RefreshButton.tsx`, `src/queue/consumer.ts`
+- Modify: `src/app/page.tsx`, `src/app/token/[id]/page.tsx` (cache tags), `open-next.config.ts` / worker entry for the consumer
 
-- [ ] **Step 1: Implement `app/api/tokens/[id]/refresh/route.ts`**
+- [ ] **Step 1: Implement `src/app/api/tokens/[id]/refresh/route.ts`**
 ```ts
 import { NextRequest, NextResponse } from "next/server";
 import { queue } from "@/lib/db";
@@ -1331,7 +1331,7 @@ export async function handleQueue(batch: MessageBatch<{ tokenId: number }>, env:
 
 - [ ] **Step 4: Register the consumer on the OpenNext worker**
 
-OpenNext generates the fetch handler; add a `queue` export. In `open-next.config.ts` keep default, and create `src/queue/index.ts` that re-exports OpenNext's worker `fetch` plus our `queue` handler, then point `wrangler.toml` `main` at it. Concretely, create `worker.ts` at root:
+OpenNext generates the fetch handler; add a `queue` export. Keep `open-next.config.ts` default, create a root `worker.ts` that re-exports OpenNext's worker `fetch` plus our `queue` handler, and point `wrangler.toml` `main` at it:
 ```ts
 import { default as handler } from "./.open-next/worker.js";
 import { handleQueue } from "./src/queue/consumer";
@@ -1348,7 +1348,7 @@ Set `wrangler.toml` `main = "worker.ts"`. (If OpenNext's worker export shape dif
 
 - [ ] **Step 5: Add cache tags + revalidation**
 
-In `app/token/[id]/page.tsx` and `app/page.tsx`, wrap D1 reads with `unstable_cache` tagged `token:{id}` and `tokens-list`. In `handleQueue`, after a successful update call OpenNext's cache purge for those tags (use `revalidateTag` via a server action invoked from the consumer, or the OpenNext cache API). Minimum viable approach: tag reads and call `revalidateTag("tokens-list")` / `revalidateTag(\`token:${id}\`)` from a small internal route the consumer hits after updating.
+In `src/app/token/[id]/page.tsx` and `src/app/page.tsx`, wrap D1 reads with `unstable_cache` tagged `token:{id}` and `tokens-list`. In `handleQueue`, after a successful update call OpenNext's cache purge for those tags (use `revalidateTag` via a server action invoked from the consumer, or the OpenNext cache API). Minimum viable approach: tag reads and call `revalidateTag("tokens-list")` / `revalidateTag(\`token:${id}\`)` from a small internal route the consumer hits after updating.
 
 - [ ] **Step 6: Verify end-to-end (preview)**
 
@@ -1366,7 +1366,7 @@ git add -A && git commit -m "feat: button-triggered metadata sync via Queue + ca
 ## Task 17: Caching, deploy, and final verification
 
 **Files:**
-- Modify: `app/page.tsx`, `app/token/[id]/page.tsx` (cache config), `wrangler.toml`
+- Modify: `src/app/page.tsx`, `src/app/token/[id]/page.tsx` (cache config), `wrangler.toml`
 
 - [ ] **Step 1: Apply migration + seed to remote D1**
 ```bash
