@@ -8,6 +8,7 @@ const CLAN_COLOR: Record<string, string> = {
 };
 
 export function TokenCard({ t }: { t: TokenRow }) {
+  if (!t.image_url) return null;
   return (
     <Link href={`/token/${t.token_id}`} className="block rounded-card border-2 border-pink-100 bg-white shadow-sm overflow-hidden hover:-translate-y-0.5 transition">
       <Image src={t.image_url} alt={t.name} width={320} height={320}
