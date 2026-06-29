@@ -5,16 +5,16 @@ import type { Facet } from "@/lib/db";
 import type { Filters } from "@/lib/filters";
 
 const LABEL: Record<CategoricalField, string> = {
-  character: "CHARACTER", clan: "CLAN", ninjutsu: "NINJUTSU", weapon_back: "WEAPON (BACK)",
-  weapon_front: "WEAPON (FRONT)", cosplay: "COSPLAY", acc_body: "ACCESSORIES (BODY)",
-  acc_head: "ACCESSORIES (HEAD)", acc_face: "ACCESSORIES (FACE)",
+  character: "CHARACTER", clan: "CLAN", ninjutsu: "NINJUTSU", weapon_back: "WEAPON / BACK",
+  weapon_front: "WEAPON / FRONT", cosplay: "COSPLAY", acc_body: "ACC / BODY",
+  acc_head: "ACC / HEAD", acc_face: "ACC / FACE",
 };
 
 export function FilterSidebar({ facets, filters }:
   { facets: Record<CategoricalField, Facet[]>; filters: Filters }) {
   return (
-    <aside className="w-44 flex-none rounded-2xl border-2 border-pink-100 bg-white p-3">
-      <div className="text-[11px] uppercase tracking-wide text-slate-400 font-bold mb-1">フィルター</div>
+    <aside className="sticky top-6 max-h-[calc(100vh-3rem)] w-44 flex-none overflow-auto rounded-2xl border border-line bg-surface/60 p-4 backdrop-blur-sm md:w-52">
+      <div className="mb-1 text-[10px] uppercase tracking-[0.25em] text-faint">絞り込み · Filter</div>
       {CATEGORICAL_FIELDS.map((field) => (
         <FacetGroup key={field} field={field} label={LABEL[field]}
           facets={facets[field]} selected={filters.categorical[field] ?? []} />

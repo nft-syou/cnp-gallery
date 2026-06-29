@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { cache } from "react";
 import { getToken } from "@/lib/db";
@@ -17,6 +18,10 @@ const load = cache(async (id: string) => {
   return getToken(Number(id));
 });
 
+const CLAN_COLOR: Record<string, string> = {
+  Iga: "text-iga", Koka: "text-koka", Fuma: "text-fuma", Saika: "text-saika",
+};
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const t = await load((await params).id);
   if (!t) return { title: "Not found | CNP Gallery" };
@@ -32,23 +37,55 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
   const { id } = await params;
   const t = await load(id);
   if (!t) notFound();
+  const clan = CLAN_COLOR[t.clan] ?? "text-muted";
+
   return (
-    <main className="max-w-4xl mx-auto p-4 grid md:grid-cols-2 gap-6">
-      <Image src={t.image_url} alt={t.name} width={1024} height={1024} sizes="(max-width:768px) 100vw, 50vw" className="w-full rounded-card bg-slate-100" />
-      <div>
-        <div className="flex items-center gap-2">
-          <h1 className="font-extrabold text-xl text-cnp-ink">{t.name}</h1>
-          <RefreshButton tokenId={t.token_id} />
+    <main className="mx-auto w-full max-w-5xl px-5 pb-16 pt-8">
+      <Link href="/" className="inline-flex items-center gap-1.5 text-xs tracking-wide text-muted transition-colors hover:text-ink">
+        <span aria-hidden>←</span> ギャラリーへ戻る
+      </Link>
+
+      <div className="mt-5 grid gap-8 md:grid-cols-2">
+        {/* artwork */}
+        <div className="reveal overflow-hidden rounded-card border border-line bg-bg-2 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.9)]">
+          <Image src={t.image_url} alt={t.name} width={1024} height={1024}
+            sizes="(max-width:768px) 100vw, 50vw"
+            className="aspect-square w-full object-cover" />
         </div>
-        <StatRadar data={toRadarData(t)} />
-        <dl className="grid grid-cols-2 gap-2 mt-4 text-sm">
-          {CATEGORICAL_FIELDS.map((f) => (
-            <div key={f} className="rounded-lg bg-cnp-bg p-2">
-              <dt className="text-[10px] uppercase text-slate-400">{f}</dt>
-              <dd className="font-bold text-cnp-ink">{(t[f] as string) || "None"}</dd>
+
+        {/* dossier */}
+        <div className="reveal" style={{ animationDelay: "70ms" }}>
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <span className={`inline-flex items-center gap-1.5 rounded-full border border-line bg-bg-2 px-2.5 py-0.5 text-[11px] font-medium ${clan}`}>
+                <span aria-hidden className="h-1 w-1 rounded-full bg-current" />
+                {t.clan || "—"} 一族
+              </span>
+              <h1 className="mt-2.5 font-display text-[28px] leading-tight text-ink">{t.name}</h1>
+              <p className="mt-1 text-xs tabular-nums tracking-wide text-faint">TOKEN #{t.token_id}</p>
             </div>
-          ))}
-        </dl>
+            <RefreshButton tokenId={t.token_id} />
+          </div>
+
+          {/* 5 遁術 radar */}
+          <section className="mt-6 rounded-2xl border border-line bg-surface/50 p-4">
+            <div className="mb-1 text-[10px] uppercase tracking-[0.25em] text-faint">五遁術 · Ninjutsu</div>
+            <StatRadar data={toRadarData(t)} />
+          </section>
+
+          {/* traits */}
+          <dl className="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line">
+            {CATEGORICAL_FIELDS.map((f) => {
+              const value = (t[f] as string) || "";
+              return (
+                <div key={f} className="bg-surface px-3 py-2.5">
+                  <dt className="text-[9.5px] uppercase tracking-[0.12em] text-faint">{f.replace(/_/g, " · ")}</dt>
+                  <dd className={`mt-0.5 truncate text-sm font-medium ${value ? "text-ink" : "text-faint"}`}>{value || "なし"}</dd>
+                </div>
+              );
+            })}
+          </dl>
+        </div>
       </div>
     </main>
   );

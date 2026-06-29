@@ -1,36 +1,142 @@
 @import "tailwindcss";
 
+/* ============================================================
+   墨と遁  ·  Ink & Element
+   A dark, gallery-grade theme for CryptoNinja Partners.
+   The NFT art is the hero; ink-black canvas, vermilion (朱) seal
+   accent, and the five 遁術 elements carry the colour.
+   ============================================================ */
 @theme {
-  --color-cnp-pink: #ff7eb6;
-  --color-cnp-blue: #4cc9f0;
-  --color-cnp-yellow: #ffd166;
-  --color-cnp-purple: #9d8cff;
-  --color-cnp-ink: #2b2b3a;
-  --color-cnp-bg: #fff7fb;
-  --radius-card: 18px;
+  /* surfaces — sumi ink */
+  --color-bg:        #0b0b0f;
+  --color-bg-2:      #0f0f15;
+  --color-surface:   #14141c;
+  --color-surface-2: #1b1b25;
+  --color-line:      #26262f;
+  --color-line-2:    #34343f;
+
+  /* type */
+  --color-ink:    #f4f0e7;   /* warm off-white */
+  --color-muted:  #9b958b;
+  --color-faint:  #615d57;
+
+  /* signature accent — 朱 vermilion + 金 gold */
+  --color-shu:      #ef4b3a;
+  --color-shu-soft: #ff7361;
+  --color-gold:     #e6c14a;
+
+  /* 遁術 — the five elements */
+  --color-katon:   #ef5339;  /* 火 */
+  --color-suiton:  #4193e6;  /* 水 */
+  --color-doton:   #c2954e;  /* 土 */
+  --color-kinton:  #e6c14a;  /* 金 */
+  --color-mokuton: #5fb06a;  /* 木 */
+
+  /* clans */
+  --color-iga:   #ef4b3a;
+  --color-koka:  #2fb3a6;
+  --color-fuma:  #9b6cff;
+  --color-saika: #e6a23c;
+
+  --radius-card: 14px;
+
+  --font-display: var(--font-fraunces), "Times New Roman", serif;
+  --font-sans: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic",
+    "YuGothic", "Noto Sans JP", "Meiryo", system-ui, -apple-system, sans-serif;
 }
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* ---------------------------------------------- base */
+html { color-scheme: dark; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "palt" 1; /* tighter JP kerning */
+  -webkit-font-smoothing: antialiased;
+  /* atmosphere — a faint vermilion dawn, top-right; cool counter-glow, left */
+  background-image:
+    radial-gradient(1200px 560px at 78% -10%, rgba(239, 75, 58, 0.11), transparent 62%),
+    radial-gradient(900px 520px at -8% 4%, rgba(65, 147, 230, 0.06), transparent 58%);
+  background-attachment: fixed;
 }
+
+/* grain — a hair of texture so the dark never reads as flat */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* keep real content above the atmosphere layers */
+body > * { position: relative; z-index: 1; }
+
+::selection { background: rgba(239, 75, 58, 0.32); color: #fff; }
+
+/* refined scrollbars (filter lists, page) */
+* { scrollbar-width: thin; scrollbar-color: var(--color-line-2) transparent; }
+*::-webkit-scrollbar { width: 9px; height: 9px; }
+*::-webkit-scrollbar-thumb { background: var(--color-line-2); border-radius: 9px; border: 2px solid transparent; background-clip: content-box; }
+*::-webkit-scrollbar-thumb:hover { background: var(--color-faint); }
+
+/* ---------------------------------------------- motion */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes seal-in {
+  0%   { opacity: 0; transform: rotate(-12deg) scale(0.6); }
+  60%  { opacity: 1; transform: rotate(4deg) scale(1.06); }
+  100% { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .reveal { opacity: 0; animation: rise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .seal   { animation: seal-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+}
+
+/* ---------------------------------------------- form controls (dark) */
+input[type="checkbox"] {
+  appearance: none;
+  width: 14px; height: 14px;
+  border: 1px solid var(--color-line-2);
+  border-radius: 4px;
+  background: var(--color-bg-2);
+  cursor: pointer;
+  flex: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+input[type="checkbox"]:hover { border-color: var(--color-muted); }
+input[type="checkbox"]:checked {
+  background: var(--color-shu);
+  border-color: var(--color-shu);
+  box-shadow: 0 0 0 3px rgba(239, 75, 58, 0.18);
+}
+input[type="checkbox"]:checked::after {
+  content: "";
+  display: block;
+  width: 4px; height: 8px;
+  margin: 0.5px auto 0;
+  border: solid #1a0d0a;
+  border-width: 0 2px 2px 0;
+  transform: rotate(42deg);
+}
+input[type="number"] {
+  background: var(--color-bg-2);
+  border: 1px solid var(--color-line);
+  border-radius: 7px;
+  color: var(--color-ink);
+  transition: border-color 0.15s;
+}
+input[type="number"]:focus { outline: none; border-color: var(--color-shu); }
+input[type="text"], input:not([type]) {
+  color: var(--color-ink);
+}
+input::placeholder { color: var(--color-faint); }
+
+summary { list-style: none; }
+summary::-webkit-details-marker { display: none; }
