@@ -1,7 +1,10 @@
 name = "cnp-gallery"
 compatibility_date = "2025-03-01"
 compatibility_flags = ["nodejs_compat"]
-main = ".open-next/worker.js"
+# Custom Worker entry: wraps the OpenNext-generated .open-next/worker.js to add
+# the cnp-sync Queue consumer (see worker.ts). The generated worker is still
+# built by `opennextjs-cloudflare build`; worker.ts re-exports its fetch + DOs.
+main = "worker.ts"
 
 # NOTE: database_id is a placeholder for local dev (`wrangler ... --local`).
 # Before deploying remotely, run `npx wrangler d1 create cnp-gallery` and
@@ -10,6 +13,15 @@ main = ".open-next/worker.js"
 binding = "DB"
 database_name = "cnp-gallery"
 database_id = "local-dev-placeholder"
+
+# Self-reference service binding. Lets the Queue consumer (which runs outside the
+# Next.js request lifecycle) call the internal /api/internal/revalidate route to
+# run revalidateTag inside a request. `service` MUST equal the worker `name` above.
+# OpenNext also uses this binding for its own revalidation. See
+# https://opennext.js.org/cloudflare/caching
+[[services]]
+binding = "WORKER_SELF_REFERENCE"
+service = "cnp-gallery"
 
 [[queues.producers]]
 binding = "SYNC_QUEUE"
