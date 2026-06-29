@@ -4,8 +4,8 @@ import { useState } from "react";
 export function RefreshButton({ tokenId }: { tokenId: number }) {
   const [state, setState] = useState<"idle" | "sent">("idle");
   async function onClick() {
-    await fetch(`/api/tokens/${tokenId}/refresh`, { method: "POST" });
-    setState("sent");
+    const res = await fetch(`/api/tokens/${tokenId}/refresh`, { method: "POST" });
+    if (res.ok) setState("sent");
   }
   return (
     <button onClick={onClick} disabled={state === "sent"}
