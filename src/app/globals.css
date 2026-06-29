@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@theme {
+  --color-cnp-pink: #ff7eb6;
+  --color-cnp-blue: #4cc9f0;
+  --color-cnp-yellow: #ffd166;
+  --color-cnp-purple: #9d8cff;
+  --color-cnp-ink: #2b2b3a;
+  --color-cnp-bg: #fff7fb;
+  --radius-card: 18px;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
