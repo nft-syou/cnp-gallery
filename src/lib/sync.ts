@@ -11,7 +11,12 @@ export function sourceToFields(src: SourceJson): Partial<TokenRow> {
   for (const a of src.attributes ?? []) {
     const col = CSV_TO_DB[a.trait_type];
     if (!col) continue;
-    out[col] = STAT.has(col) ? Number(a.value) : String(a.value);
+    if (STAT.has(col)) {
+      const n = Number(a.value);
+      out[col] = Number.isFinite(n) ? n : 0;
+    } else {
+      out[col] = String(a.value);
+    }
   }
   return out as Partial<TokenRow>;
 }

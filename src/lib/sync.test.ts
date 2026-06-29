@@ -26,4 +26,13 @@ describe("sync", () => {
     const same = { name: "Makami #10001", clan: "Koka", katon: 6, character: "Makami", image_url: "https://x/10001.png" } as TokenRow;
     expect(diffUpdate(same, sourceToFields(sourceJson))).toEqual({});
   });
+  it("skips unknown trait types", () => {
+    expect(sourceToFields({ attributes: [{ trait_type: "UNKNOWN", value: "x" }] })).toEqual({});
+  });
+  it("coerces non-numeric stat values to 0 (avoids NaN churn)", () => {
+    const f = sourceToFields({ attributes: [{ trait_type: "KATON", value: "N/A" }] });
+    expect(f.katon).toBe(0);
+    // A 0 stat must not be flagged as changed on repeat syncs.
+    expect(diffUpdate({ katon: 0 } as TokenRow, f)).toEqual({});
+  });
 });
