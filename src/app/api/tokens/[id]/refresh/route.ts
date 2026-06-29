@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import type { TokenRow } from "@/lib/csv";
-import { sourceToFields, diffUpdate } from "@/lib/sync";
+import { sourceToFields, diffUpdate, type SourceJson } from "@/lib/sync";
 import { TAG_LIST, tagToken } from "@/lib/db";
 
 const SOURCE = "https://data.cryptoninjapartners.com/new/json";
@@ -30,7 +30,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     const status = res.status >= 500 || res.status === 429 ? 502 : 404;
     return NextResponse.json({ ok: false, error: `source_${res.status}` }, { status });
   }
-  const src = (await res.json()) as { name?: string; image?: string; attributes?: { trait_type: string; value: string | number }[] };
+  const src = (await res.json()) as SourceJson;
   const current = await db.prepare("SELECT * FROM tokens WHERE token_id = ?").bind(id).first<TokenRow>();
   if (!current) return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
 

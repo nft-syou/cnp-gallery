@@ -1,7 +1,7 @@
 import { CSV_TO_DB, STAT_FIELDS } from "./fields";
 import type { TokenRow } from "./csv";
 
-interface SourceJson { name?: string; image?: string; attributes?: { trait_type: string; value: string | number }[] }
+export interface SourceJson { name?: string; image?: string; attributes?: { trait_type: string; value: string | number }[] }
 const STAT = new Set<string>(STAT_FIELDS);
 
 export function sourceToFields(src: SourceJson): Partial<TokenRow> {
