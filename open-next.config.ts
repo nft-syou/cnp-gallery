@@ -5,7 +5,7 @@ import doShardedTagCache from "@opennextjs/cloudflare/overrides/tag-cache/do-sha
 // Caching strategy (see README "Caching" section).
 //
 // The gallery caches its D1 reads with `unstable_cache(..., { tags })` and the
-// /token/[id] route is cacheable; the Queue consumer busts those tags via
+// /token/[id] route is cacheable; the refresh route busts those tags via
 // revalidateTag after an UPDATE. For revalidateTag to actually do anything, two
 // pieces are required and BOTH are configured here:
 //
@@ -17,9 +17,9 @@ import doShardedTagCache from "@opennextjs/cloudflare/overrides/tag-cache/do-sha
 //   2. tagCache — the tag -> last-revalidated index that revalidateTag writes to
 //      and that cache reads consult. We use the sharded Durable Object tag cache
 //      (stable in 1.20.1). It needs NO external resource: the DOShardedTagCache
-//      Durable Object (re-exported from worker.ts) is deployed with the Worker.
-//      Bound as the NEXT_TAG_CACHE_DO_SHARDED durable_object + a [[migrations]]
-//      entry in wrangler.toml.
+//      Durable Object (exported by the generated .open-next/worker.js) is
+//      deployed with the Worker. Bound as the NEXT_TAG_CACHE_DO_SHARDED
+//      durable_object + a [[migrations]] entry in wrangler.toml.
 //
 // enableCacheInterception serves cacheable routes (e.g. /token/[id]) straight
 // from the incremental cache at the routing layer, skipping a full server render

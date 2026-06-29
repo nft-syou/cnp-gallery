@@ -5,7 +5,7 @@ import { FilterSidebar } from "@/components/FilterSidebar";
 
 // No `force-dynamic`: the page already renders dynamically because it awaits
 // `searchParams`. The cache layer that matters here is the per-query
-// `unstable_cache(..., { tags: [TAG_LIST] })` in @/lib/db — the Queue consumer
+// `unstable_cache(..., { tags: [TAG_LIST] })` in @/lib/db — the refresh route
 // busts TAG_LIST via revalidateTag so the gallery refreshes after a sync.
 const PAGE = 48;
 

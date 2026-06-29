@@ -1,10 +1,11 @@
 name = "cnp-gallery"
 compatibility_date = "2025-03-01"
 compatibility_flags = ["nodejs_compat"]
-# Custom Worker entry: wraps the OpenNext-generated .open-next/worker.js to add
-# the cnp-sync Queue consumer (see worker.ts). The generated worker is still
-# built by `opennextjs-cloudflare build`; worker.ts re-exports its fetch + DOs.
-main = "worker.ts"
+# OpenNext-generated entry. `opennextjs-cloudflare build` produces this file; it
+# exports the `fetch` handler plus the Durable Object classes (incl.
+# DOShardedTagCache for the tag cache). The "更新" sync runs synchronously inside
+# the refresh API route, so no custom Worker / Queue consumer is needed.
+main = ".open-next/worker.js"
 
 # NOTE: database_id is a placeholder for local dev (`wrangler ... --local`).
 # Before deploying remotely, run `npx wrangler d1 create cnp-gallery` and
@@ -13,24 +14,6 @@ main = "worker.ts"
 binding = "DB"
 database_name = "cnp-gallery"
 database_id = "local-dev-placeholder"
-
-# Self-reference service binding. Lets the Queue consumer (which runs outside the
-# Next.js request lifecycle) call the internal /api/internal/revalidate route to
-# run revalidateTag inside a request. `service` MUST equal the worker `name` above.
-# OpenNext also uses this binding for its own revalidation. See
-# https://opennext.js.org/cloudflare/caching
-[[services]]
-binding = "WORKER_SELF_REFERENCE"
-service = "cnp-gallery"
-
-[[queues.producers]]
-binding = "SYNC_QUEUE"
-queue = "cnp-sync"
-
-[[queues.consumers]]
-queue = "cnp-sync"
-max_batch_size = 10
-max_retries = 5
 
 # --- OpenNext caching backends (see open-next.config.ts) ---
 
@@ -43,8 +26,9 @@ binding = "NEXT_INC_CACHE_R2_BUCKET"
 bucket_name = "cnp-gallery-cache"
 
 # Sharded Durable Object tag cache. revalidateTag writes here; cache reads
-# consult it. The class is re-exported from worker.ts (the wrangler `main`).
-# Durable Objects deploy WITH the Worker — no resource to create beforehand.
+# consult it. DOShardedTagCache is exported by the generated .open-next/worker.js
+# (the wrangler `main`). Durable Objects deploy WITH the Worker — no resource to
+# create beforehand.
 [[durable_objects.bindings]]
 name = "NEXT_TAG_CACHE_DO_SHARDED"
 class_name = "DOShardedTagCache"

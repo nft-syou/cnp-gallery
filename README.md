@@ -5,6 +5,9 @@ Partners (CNP)** tokens. Browse the full collection, filter by trait facets,
 inspect per-token stats on a radar chart, and trigger an on-demand metadata
 refresh that re-syncs a token from the source and busts its cache.
 
+Runs on the **free** Cloudflare Workers plan (no Workers Paid / Queues
+required) — the "更新" sync runs synchronously inside the refresh API route.
+
 Design priorities:
 
 - **Speed first.** Reads are cached at the edge and served on-demand; only
@@ -20,7 +23,6 @@ Design priorities:
 - **Cloudflare Workers** via [`@opennextjs/cloudflare`](https://opennext.js.org/cloudflare)
   `1.20.1` — the app is built into a Worker and deployed to Cloudflare.
 - **Cloudflare D1** (SQLite) — token data store.
-- **Cloudflare Queues** — the `cnp-sync` queue drives on-demand metadata refresh.
 - **Cloudflare R2** — OpenNext incremental (edge) cache store.
 - **Durable Objects** — OpenNext sharded tag cache (`revalidateTag` backend).
 - **Cloudflare Image Transformations** (`/cdn-cgi/image/...`) — responsive
@@ -39,18 +41,12 @@ Design priorities:
 - `src/lib/db.ts` — D1 accessors (`listTokens` / `facets` / `totalCount` /
   `getToken`) wrapped in `unstable_cache` with the tags above. Exports `TAG_LIST`
   and `tagToken(id)`.
-- `src/app/api/tokens/[id]/refresh/route.ts` — the "更新" button enqueues a
-  `{ tokenId }` job on `SYNC_QUEUE`.
-- `src/queue/consumer.ts` — the queue consumer fetches the source JSON, diffs it
-  against D1, `UPDATE`s changed columns, then (best-effort) calls the internal
-  revalidate route to bust the cache tags.
-- `src/app/api/internal/revalidate/route.ts` — runs `revalidateTag` inside the
-  request lifecycle. Protected by `REVALIDATE_SECRET` (fail-closed). The consumer
-  reaches it via the `WORKER_SELF_REFERENCE` service binding (never leaves CF).
-- `worker.ts` — the wrangler `main`. Wraps the OpenNext-generated
-  `.open-next/worker.js` to add the `queue` consumer handler and re-exports the
-  Durable Object classes OpenNext needs (`DOQueueHandler`, `DOShardedTagCache`,
-  `BucketCachePurge`).
+- `src/app/api/tokens/[id]/refresh/route.ts` — the "更新" button POSTs here. The
+  route runs the whole sync **synchronously** in the request: fetch the source
+  JSON → diff against D1 (`@/lib/sync`) → `UPDATE` changed columns → call
+  `revalidateTag` for `token:{id}` and `tokens-list`. Because it runs inside the
+  Next.js request lifecycle, `revalidateTag` works directly — no Queue, consumer,
+  or internal self-referencing route, so the app needs no Workers Paid plan.
 
 ### Caching strategy
 
@@ -70,7 +66,7 @@ configured in `open-next.config.ts`:
 straight from the incremental cache at the routing layer, skipping a full server
 render. (Safe here because the app does not use PPR.)
 
-When the queue consumer updates a token it invalidates `token:{id}` (that one
+When the refresh route updates a token it invalidates `token:{id}` (that one
 detail page) and `tokens-list` (the gallery, since a change can shift facet
 counts / list order).
 
@@ -133,6 +129,12 @@ npx opennextjs-cloudflare build
 These steps require a Cloudflare account and create real resources. Run them in
 order from the project root. They are **not** part of the local build.
 
+The app runs on the **free** Workers plan: the Workers and D1 free tiers cover
+it, the R2 free tier needs to be activated for the account (creating the bucket
+below prompts you to), and the tag cache uses a SQLite Durable Object, which is
+available on the free tier. There is no Cloudflare Queue (so no Workers Paid
+requirement).
+
 `wrangler.toml` ships with placeholder identifiers for resources that only exist
 once created (`database_id = "local-dev-placeholder"`, `bucket_name =
 "cnp-gallery-cache"`). Replace the placeholders with the real values the commands
@@ -153,13 +155,7 @@ below print.
    `[[durable_objects.bindings]]` + `[[migrations]]` (`new_sqlite_classes =
    ["DOShardedTagCache"]`) in `wrangler.toml` and is provisioned on deploy.
 
-2. **Create the queue:**
-
-   ```bash
-   npx wrangler queues create cnp-sync
-   ```
-
-3. **Apply the schema and seed to remote D1:**
+2. **Apply the schema and seed to remote D1:**
 
    ```bash
    npx wrangler d1 execute cnp-gallery --remote --file ./migrations/0001_init.sql
@@ -174,20 +170,13 @@ below print.
    # expect 22222
    ```
 
-4. **Set the revalidation secret** (the internal revalidate route is fail-closed:
-   it returns 401 if this is unset, so it MUST be configured before deploy):
-
-   ```bash
-   npx wrangler secret put REVALIDATE_SECRET
-   ```
-
-5. **Build and deploy:**
+3. **Build and deploy:**
 
    ```bash
    npx opennextjs-cloudflare build && npx opennextjs-cloudflare deploy
    ```
 
-6. **Enable Image Transformations** for the zone in the Cloudflare dashboard
+4. **Enable Image Transformations** for the zone in the Cloudflare dashboard
    (Speed → Optimization → Image Transformations → enable for the zone). The
    gallery's `next/image` loader serves `/cdn-cgi/image/...` URLs, which 404
    until this is on.
@@ -199,7 +188,7 @@ below print.
 - [ ] "もっと見る" (load more) pages forward by cursor.
 - [ ] A token detail page shows the stat radar and correct OGP/Twitter tags
       (check `<head>` or a link-preview debugger).
-- [ ] On a detail page, the "更新" button enqueues a sync → the consumer updates
-      D1 → the cache is busted and the change is visible on reload. Use
-      `npx wrangler tail` to watch the consumer and confirm no `revalidate
-      failed: 401` (which would mean `REVALIDATE_SECRET` is missing/mismatched).
+- [ ] On a detail page, the "更新" button runs the sync in-request (button shows
+      「更新中…」 then 「更新しました」) → D1 is updated → the cache is busted and the
+      change is visible on reload. `npx wrangler tail` shows the single POST to
+      `/api/tokens/<id>/refresh` (no separate consumer invocation).

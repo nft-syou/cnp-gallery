@@ -7,7 +7,6 @@ import type { Filters } from "./filters";
 
 export interface CloudflareEnv {
   DB: D1Database;
-  SYNC_QUEUE: Queue<{ tokenId: number }>;
 }
 
 // Cache tags. The whole gallery (list + facets + count) shares one tag because
@@ -18,10 +17,6 @@ export const tagToken = (id: number) => `token:${id}`;
 
 function db(): D1Database {
   return (getCloudflareContext().env as unknown as CloudflareEnv).DB;
-}
-
-export function queue(): Queue<{ tokenId: number }> {
-  return (getCloudflareContext().env as unknown as CloudflareEnv).SYNC_QUEUE;
 }
 
 async function listTokensUncached(f: Filters, limit: number): Promise<TokenRow[]> {
@@ -59,8 +54,8 @@ async function totalCountUncached(f: Filters): Promise<number> {
 const filterKey = (f: Filters, limit: number) => JSON.stringify({ f, limit });
 
 // Public, cache-tagged reads. The gallery reads carry TAG_LIST; the detail read
-// carries token:{id}. The Queue consumer invalidates these tags after an update
-// (via the internal revalidate route) so the edge cache refreshes.
+// carries token:{id}. The refresh route (src/app/api/tokens/[id]/refresh) calls
+// revalidateTag on these tags after an update so the edge cache refreshes.
 export function listTokens(f: Filters, limit = 48): Promise<TokenRow[]> {
   return unstable_cache(
     () => listTokensUncached(f, limit),
