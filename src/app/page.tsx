@@ -3,7 +3,10 @@ import { listTokens, facets, totalCount } from "@/lib/db";
 import { GalleryGrid } from "@/components/GalleryGrid";
 import { FilterSidebar } from "@/components/FilterSidebar";
 
-export const dynamic = "force-dynamic";
+// No `force-dynamic`: the page already renders dynamically because it awaits
+// `searchParams`. The cache layer that matters here is the per-query
+// `unstable_cache(..., { tags: [TAG_LIST] })` in @/lib/db — the Queue consumer
+// busts TAG_LIST via revalidateTag so the gallery refreshes after a sync.
 const PAGE = 48;
 
 export default async function Home({ searchParams }:

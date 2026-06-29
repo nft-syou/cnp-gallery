@@ -31,3 +31,25 @@ queue = "cnp-sync"
 queue = "cnp-sync"
 max_batch_size = 10
 max_retries = 5
+
+# --- OpenNext caching backends (see open-next.config.ts) ---
+
+# Incremental cache store. The R2 incremental cache persists the cached values
+# that revalidateTag busts. Create the bucket before deploying:
+#   npx wrangler r2 bucket create cnp-gallery-cache
+# (you may rename it; keep this binding name as-is — OpenNext looks it up).
+[[r2_buckets]]
+binding = "NEXT_INC_CACHE_R2_BUCKET"
+bucket_name = "cnp-gallery-cache"
+
+# Sharded Durable Object tag cache. revalidateTag writes here; cache reads
+# consult it. The class is re-exported from worker.ts (the wrangler `main`).
+# Durable Objects deploy WITH the Worker — no resource to create beforehand.
+[[durable_objects.bindings]]
+name = "NEXT_TAG_CACHE_DO_SHARDED"
+class_name = "DOShardedTagCache"
+
+# Durable Objects backed by SQL storage must be declared in a migration.
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["DOShardedTagCache"]

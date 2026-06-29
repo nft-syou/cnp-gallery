@@ -8,8 +8,10 @@ import { StatRadar } from "@/components/StatRadar";
 import { RefreshButton } from "@/components/RefreshButton";
 import { CATEGORICAL_FIELDS } from "@/lib/fields";
 
-export const dynamic = "force-dynamic";
-
+// No `force-dynamic` and no generateStaticParams: this route renders on-demand
+// the first time an id is requested, then the result is cached and served from
+// the edge incremental cache. The `getToken` read is tagged `token:{id}`, so a
+// refresh of that token busts exactly this page via revalidateTag (speed-first).
 const load = cache(async (id: string) => {
   if (!/^\d+$/.test(id)) return null;
   return getToken(Number(id));

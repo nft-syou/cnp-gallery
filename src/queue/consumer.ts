@@ -14,7 +14,10 @@ interface SourceJson {
 // Env the consumer needs beyond DB. WORKER_SELF_REFERENCE is the OpenNext-provided
 // service binding that lets the Worker call its own Next routes (used to trigger
 // revalidateTag from inside the request lifecycle). REVALIDATE_SECRET guards that
-// route. Both are optional so the UPDATE path still works if cache wiring is absent.
+// route, which is now fail-closed: if the secret is unset the route returns 401
+// and cache invalidation is skipped (the D1 write still succeeds). Set the secret
+// before deploy (`wrangler secret put REVALIDATE_SECRET`). Both are typed optional
+// so the UPDATE path still works (best-effort revalidation) if wiring is absent.
 export type ConsumerEnv = CloudflareEnv & {
   WORKER_SELF_REFERENCE?: { fetch: typeof fetch };
   REVALIDATE_SECRET?: string;

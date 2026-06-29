@@ -11,9 +11,13 @@ import { TAG_LIST, tagToken } from "@/lib/db";
 // Protected by a shared secret (REVALIDATE_SECRET) so it can only be invoked by
 // the consumer, not arbitrary clients. The consumer reaches this route via the
 // WORKER_SELF_REFERENCE service binding (same Worker), so it never leaves CF.
+//
+// Fail-closed: if REVALIDATE_SECRET is unset OR the header doesn't match, reject
+// with 401. An unset secret must NOT open the route — it must be configured as a
+// Worker secret before deploy (`wrangler secret put REVALIDATE_SECRET`).
 export async function POST(req: NextRequest) {
   const secret = process.env.REVALIDATE_SECRET;
-  if (secret && req.headers.get("x-revalidate-secret") !== secret) {
+  if (!secret || req.headers.get("x-revalidate-secret") !== secret) {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
 
