@@ -7,6 +7,14 @@ compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 # the refresh API route, so no custom Worker / Queue consumer is needed.
 main = ".open-next/worker.js"
 
+# Custom domain on the syou.io zone (same Cloudflare account). Cloudflare
+# auto-provisions the DNS record + TLS cert on deploy. Required for images:
+# /cdn-cgi/image/ transformations run only on a zone with Image Transformations
+# enabled — not on *.workers.dev.
+routes = [
+  { pattern = "cnp-gallery.syou.io", custom_domain = true }
+]
+
 # Static assets (CSS, JS chunks) live in .open-next/assets and are served via
 # Cloudflare Workers Static Assets. Without this binding every /_next/static/*
 # request 404s — unstyled page and no client hydration.
