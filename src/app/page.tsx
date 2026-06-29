@@ -18,7 +18,7 @@ export default async function Home({ searchParams }:
   let nextHref: string | null = null;
   if (hasMore) {
     const params = new URLSearchParams(
-      Object.entries(sp).map(([k, v]) => [k, Array.isArray(v) ? v[0]! : v ?? ""] as [string, string]));
+      Object.entries(sp).map(([k, v]) => [k, Array.isArray(v) ? (v[0] ?? "") : v ?? ""] as [string, string]));
     params.set("cursor", String(page[page.length - 1].token_id));
     nextHref = `/?${params.toString()}`;
   }
@@ -27,7 +27,8 @@ export default async function Home({ searchParams }:
       <header className="flex items-center gap-3 mb-4">
         <h1 className="font-extrabold text-cnp-pink text-xl">CNP <span className="text-cnp-blue">Gallery</span></h1>
         <form action="/token" className="ml-auto">
-          <input name="id" placeholder="🔍 token IDで検索" className="rounded-full border-2 border-pink-100 px-3 py-1.5 text-sm" />
+          <label htmlFor="token-search" className="sr-only">token ID検索</label>
+          <input id="token-search" name="id" placeholder="🔍 token IDで検索" className="rounded-full border-2 border-pink-100 px-3 py-1.5 text-sm" />
         </form>
       </header>
       <div className="text-xs text-slate-400 mb-2">{total.toLocaleString()} 件</div>

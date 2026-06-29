@@ -11,7 +11,7 @@ export function StatRangeFilter() {
     router.push(`${pathname}?${params.toString()}`);
   }
   return (
-    <details className="border-b border-pink-100 py-2">
+    <details key={sp.toString()} className="border-b border-pink-100 py-2">
       <summary className="text-xs font-bold text-cnp-pink cursor-pointer">ステータス（5遁術）</summary>
       <div className="mt-1 space-y-1">
         {STAT_FIELDS.map((s) => (
