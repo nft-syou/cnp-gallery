@@ -28,7 +28,7 @@ async function revalidate(env: ConsumerEnv, tokenId: number): Promise<void> {
   const self = env.WORKER_SELF_REFERENCE;
   if (!self) return; // No self-reference binding configured; skip (see report).
   try {
-    await self.fetch("https://worker/api/internal/revalidate", {
+    const res = await self.fetch("https://worker/api/internal/revalidate", {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -36,8 +36,12 @@ async function revalidate(env: ConsumerEnv, tokenId: number): Promise<void> {
       },
       body: JSON.stringify({ tokenId }),
     });
-  } catch {
+    // Best-effort: surface a secret mismatch (401) / bad request in `wrangler
+    // tail` without failing the message (the D1 write already committed).
+    if (!res.ok) console.warn(`revalidate failed: ${res.status}`);
+  } catch (err) {
     // swallow: cache will fall back to time-based revalidation
+    console.warn("revalidate error", err);
   }
 }
 
@@ -50,9 +54,12 @@ export async function handleQueue(
     try {
       const res = await fetch(`${SOURCE}/${id}.json`);
       if (!res.ok) {
-        // Source has no data for this token (e.g. unrevealed). Nothing to do;
-        // drop the message so it doesn't retry forever.
-        msg.ack();
+        // Distinguish transient from permanent source failures. 5xx/429 are
+        // transient (upstream hiccup / rate limit) -> retry (bounded by
+        // max_retries). 4xx incl. 404 (token unrevealed / no data) are
+        // permanent -> ack so it doesn't retry forever.
+        if (res.status >= 500 || res.status === 429) msg.retry();
+        else msg.ack();
         continue;
       }
       const src = (await res.json()) as SourceJson;
