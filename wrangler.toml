@@ -1,19 +1,29 @@
 name = "cnp-gallery"
 compatibility_date = "2025-03-01"
-compatibility_flags = ["nodejs_compat"]
+compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 # OpenNext-generated entry. `opennextjs-cloudflare build` produces this file; it
 # exports the `fetch` handler plus the Durable Object classes (incl.
 # DOShardedTagCache for the tag cache). The "更新" sync runs synchronously inside
 # the refresh API route, so no custom Worker / Queue consumer is needed.
 main = ".open-next/worker.js"
 
-# NOTE: database_id is a placeholder for local dev (`wrangler ... --local`).
-# Before deploying remotely, run `npx wrangler d1 create cnp-gallery` and
-# replace the placeholder below with the real database_id it prints.
+# Static assets (CSS, JS chunks) live in .open-next/assets and are served via
+# Cloudflare Workers Static Assets. Without this binding every /_next/static/*
+# request 404s — unstyled page and no client hydration.
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
+
+# database_id is intentionally a PLACEHOLDER and must stay one in git — this repo
+# is public. The real id is injected at deploy time by `scripts/deploy.mjs`, which
+# copies this file to a gitignored `wrangler.generated.toml` with the placeholder
+# replaced by $CLOUDFLARE_D1_DATABASE_ID (or $D1_DATABASE_ID) and deploys against
+# that copy. For local `wrangler ... --local` the placeholder is fine (D1 runs in
+# a local SQLite sandbox and ignores the id). See README "CI/CD / Deploy".
 [[d1_databases]]
 binding = "DB"
 database_name = "cnp-gallery"
-database_id = "local-dev-placeholder"
+database_id = "__D1_DATABASE_ID__"
 
 # --- OpenNext caching backends (see open-next.config.ts) ---
 

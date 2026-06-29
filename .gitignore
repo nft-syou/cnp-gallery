@@ -13,6 +13,9 @@ dist/
 # Cloudflare
 .wrangler/
 .dev.vars
+# Deploy-time config with the real D1 database_id injected (see scripts/deploy.mjs).
+# NEVER commit this — it contains the real id; the tracked wrangler.toml has a placeholder.
+wrangler.generated.toml
 
 # Env
 .env

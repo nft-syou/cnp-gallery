@@ -1,0 +1,41 @@
+name: Deploy to Cloudflare Workers
+
+# Deploys the OpenNext-bundled Worker on every push to main, and on demand.
+# The D1 database_id is NOT in the repo (public) — it is injected at deploy time
+# by scripts/deploy.mjs from the D1_DATABASE_ID repo variable. The seed is a
+# one-time manual step and is intentionally NOT run here.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Avoid overlapping deploys racing to the same Worker.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build & deploy to Cloudflare
+        run: npm run deploy:cf
+        env:
+          # Wrangler / OpenNext auth (set as GitHub repository secrets).
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Real D1 database_id injected into wrangler.generated.toml at deploy
+          # time (GitHub repository VARIABLE, not a secret).
+          D1_DATABASE_ID: ${{ vars.D1_DATABASE_ID }}

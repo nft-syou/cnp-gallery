@@ -124,6 +124,47 @@ npx opennextjs-cloudflare build
 
 ---
 
+## CI/CD / Deploy
+
+The D1 `database_id` is **never committed** (this repo is public). The tracked
+`wrangler.toml` carries the placeholder `__D1_DATABASE_ID__`; at deploy time
+`scripts/deploy.mjs` copies it to a gitignored `wrangler.generated.toml` with the
+placeholder replaced by the real id from the environment, runs
+`opennextjs-cloudflare build && opennextjs-cloudflare deploy --config
+wrangler.generated.toml` (a single `deploy --config` handles both the Worker
+upload and the R2 incremental-cache population), then deletes the generated file.
+The build is forced onto webpack via `config.buildCommand` in
+`open-next.config.ts` (Next 16's default Turbopack output can't be bundled by
+OpenNext). The script **fails fast** if the id env var is missing.
+
+### Local deploy
+
+```bash
+export CLOUDFLARE_D1_DATABASE_ID=<your-d1-database-id>
+npm run deploy:cf
+```
+
+(`D1_DATABASE_ID` is also accepted as a fallback. `npm run build:cf` builds
+without deploying; `node scripts/deploy.mjs --skip-build` reuses an existing
+`.open-next/` build.)
+
+### GitHub Actions
+
+`.github/workflows/deploy.yml` deploys on every push to `main` and via
+**workflow_dispatch**. Configure these in the repo's **Settings → Secrets and
+variables → Actions**:
+
+| Kind         | Name                    | Value                                              |
+| ------------ | ----------------------- | -------------------------------------------------- |
+| **Secret**   | `CLOUDFLARE_API_TOKEN`  | API token with Workers/D1/R2/DO deploy permissions |
+| **Secret**   | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account id                              |
+| **Variable** | `D1_DATABASE_ID`        | The D1 `database_id` (non-secret; injected at deploy) |
+
+The workflow runs `npm ci` then `npm run deploy:cf` on Node 22. It does **not**
+run the seed (that is a one-time manual step — see the runbook below).
+
+---
+
 ## Deploy runbook (Cloudflare)
 
 These steps require a Cloudflare account and create real resources. Run them in
@@ -135,17 +176,18 @@ below prompts you to), and the tag cache uses a SQLite Durable Object, which is
 available on the free tier. There is no Cloudflare Queue (so no Workers Paid
 requirement).
 
-`wrangler.toml` ships with placeholder identifiers for resources that only exist
-once created (`database_id = "local-dev-placeholder"`, `bucket_name =
-"cnp-gallery-cache"`). Replace the placeholders with the real values the commands
-below print.
+The tracked `wrangler.toml` keeps a **placeholder** D1 id (`database_id =
+"__D1_DATABASE_ID__"`) because this repo is public. The real id is **never
+committed** — it is injected at deploy time (see [CI/CD / Deploy](#cicd--deploy)
+below). `bucket_name = "cnp-gallery-cache"` is a real (non-secret) name and is
+committed as-is.
 
-1. **Create D1 and the R2 cache bucket**, then paste the real ids/names into
-   `wrangler.toml`:
+1. **Create D1 and the R2 cache bucket.** Record the D1 id for the deploy step
+   (it goes in an env var / GitHub variable, **not** into `wrangler.toml`):
 
    ```bash
    npx wrangler d1 create cnp-gallery
-   # -> copy the printed database_id into [[d1_databases]].database_id
+   # -> note the printed database_id; pass it as CLOUDFLARE_D1_DATABASE_ID at deploy
 
    npx wrangler r2 bucket create cnp-gallery-cache
    # -> bucket name must match [[r2_buckets]].bucket_name (NEXT_INC_CACHE_R2_BUCKET)
@@ -170,10 +212,10 @@ below print.
    # expect 22222
    ```
 
-3. **Build and deploy:**
+3. **Build and deploy** (injects the D1 id — see [CI/CD / Deploy](#cicd--deploy)):
 
    ```bash
-   npx opennextjs-cloudflare build && npx opennextjs-cloudflare deploy
+   CLOUDFLARE_D1_DATABASE_ID=<your-d1-id> npm run deploy:cf
    ```
 
 4. **Enable Image Transformations** for the zone in the Cloudflare dashboard
