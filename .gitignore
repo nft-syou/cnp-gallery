@@ -18,8 +18,9 @@ dist/
 .env
 .env.local
 
-# Generated (do not commit)
+# Generated / local data (do not commit)
 migrations/seed.sql
+/output.csv
 
 # OS / editor
 .DS_Store
