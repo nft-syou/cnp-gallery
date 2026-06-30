@@ -40,7 +40,7 @@ export default async function Home({ searchParams }:
           <Link href="/" aria-label="CNP Gallery トップ（絞り込みを解除）" className="inline-flex rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cnp-deep">
             {/* one file for both themes — recoloured to near-white in dark via a filter,
                 so the off-theme variant is never downloaded (was shipping a hidden 2nd logo) */}
-            <Image src="/logo.png" alt="CNP Gallery" width={480} height={159} loading="eager" unoptimized className="h-9 w-auto sm:h-11 dark:brightness-0 dark:invert" />
+            <Image src="/logo.png" alt="CNP Gallery" width={320} height={106} loading="eager" unoptimized className="h-9 w-auto sm:h-11 dark:brightness-0 dark:invert" />
           </Link>
         </h1>
 

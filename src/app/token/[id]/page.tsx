@@ -58,7 +58,7 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
       {/* top bar: the logo returns to the unfiltered gallery; theme toggle */}
       <div className="flex items-center justify-between gap-3">
         <Link href="/" aria-label="CNP Gallery トップ（絞り込みを解除）" className="inline-flex rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cnp-deep">
-          <Image src="/logo.png" alt="CNP Gallery" width={480} height={159} loading="eager" unoptimized className="h-8 w-auto sm:h-9 dark:brightness-0 dark:invert" />
+          <Image src="/logo.png" alt="CNP Gallery" width={320} height={106} loading="eager" unoptimized className="h-8 w-auto sm:h-9 dark:brightness-0 dark:invert" />
         </Link>
         <ThemeToggle />
       </div>
