@@ -7,7 +7,17 @@
 // and the mobile LCP element).
 export const LOGO_SRCSET = "/logo-160.png 160w, /logo.png 320w, /logo-480.png 480w";
 
-export function Logo({ className, sizes }: { className: string; sizes: string }) {
+// `fetchPriority="high"` where the logo is the LCP (the gallery masthead); leave
+// it "auto" elsewhere (e.g. the detail page, where the artwork is the LCP).
+export function Logo({
+  className,
+  sizes,
+  fetchPriority = "auto",
+}: {
+  className: string;
+  sizes: string;
+  fetchPriority?: "high" | "low" | "auto";
+}) {
   return (
     // eslint-disable-next-line @next/next/no-img-element -- intentional responsive srcset (see note above)
     <img
@@ -19,6 +29,7 @@ export function Logo({ className, sizes }: { className: string; sizes: string })
       alt="CNP Gallery"
       loading="eager"
       decoding="async"
+      fetchPriority={fetchPriority}
       className={className}
     />
   );

@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { cache } from "react";
@@ -82,11 +81,23 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
       </BackLink>
 
       <div className="mt-4 grid items-start gap-8 md:grid-cols-2">
-        {/* artwork — the LCP element, so load it eagerly (not lazy) */}
+        {/* artwork — the LCP element. fetchpriority=high goes directly on the
+            element (next/image emits it on neither the img nor its preload),
+            plus eager loading and a responsive srcset via the CF loader. */}
         <div className="reveal overflow-hidden rounded-card border border-line bg-surface shadow-[0_34px_64px_-34px_rgba(0,0,0,0.3)]">
-          <Image src={artSrc} alt={t.name} width={1024} height={1024}
-            sizes={artSizes} loading="eager"
-            className="block aspect-square w-full object-cover" />
+          {/* eslint-disable-next-line @next/next/no-img-element -- needs fetchpriority on the LCP element + hand-rolled CF-loader srcset */}
+          <img
+            src={cfLoader({ src: artSrc, width: 1080 })}
+            srcSet={artSrcSet}
+            sizes={artSizes}
+            width={1024}
+            height={1024}
+            alt={t.name}
+            fetchPriority="high"
+            loading="eager"
+            decoding="async"
+            className="block aspect-square w-full object-cover"
+          />
         </div>
 
         {/* dossier */}

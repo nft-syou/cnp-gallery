@@ -41,7 +41,7 @@ export default async function Home({ searchParams }:
         <h1 className="flex items-center">
           {/* logo doubles as a "reset" — links to the bare gallery URL, clearing every filter */}
           <Link href="/" aria-label="CNP Gallery トップ（絞り込みを解除）" className="inline-flex rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cnp-deep">
-            <Logo sizes={LOGO_SIZES} className="h-9 w-auto sm:h-11 dark:brightness-0 dark:invert" />
+            <Logo fetchPriority="high" sizes={LOGO_SIZES} className="h-9 w-auto sm:h-11 dark:brightness-0 dark:invert" />
           </Link>
         </h1>
 
