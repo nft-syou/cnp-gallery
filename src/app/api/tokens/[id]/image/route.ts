@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "@/lib/db";
+import { tokenImageUrl } from "@/lib/csv";
 
 // Download the original full-resolution artwork. We proxy the origin image
 // server-side (no CORS limits) and return it with a Content-Disposition
@@ -13,7 +14,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
   let res: Response;
   try {
-    res = await fetch(t.image_url);
+    res = await fetch(tokenImageUrl(t));
   } catch {
     return new NextResponse("upstream fetch failed", { status: 502 });
   }

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { TokenRow } from "@/lib/csv";
+import { type TokenRow, tokenImageUrl } from "@/lib/csv";
 
 // Clan → accent colour (the four ninja clans). Unknown/empty falls back to muted.
 const CLAN_COLOR: Record<string, string> = {
@@ -20,7 +20,7 @@ export function TokenCard({ t, priority = false }: { t: TokenRow; priority?: boo
 
       <div className="relative aspect-square overflow-hidden bg-bg-2">
         <Image
-          src={t.image_url}
+          src={tokenImageUrl(t)}
           alt={t.name}
           width={320}
           height={320}

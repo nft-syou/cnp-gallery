@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { cache } from "react";
 import { getToken } from "@/lib/db";
+import { tokenImageUrl } from "@/lib/csv";
 import { toRadarData } from "@/lib/stats";
 import { StatRadar } from "@/components/StatRadar";
 import { RefreshButton } from "@/components/RefreshButton";
@@ -40,9 +41,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       title: t.name,
       description: `CryptoNinja Partners #${t.token_id} · CLAN ${t.clan || "—"}`,
       url: `/token/${t.token_id}`,
-      images: [{ url: t.image_url, width: 1000, height: 1000, alt: t.name }],
+      images: [{ url: tokenImageUrl(t), width: 1000, height: 1000, alt: t.name }],
     },
-    twitter: { card: "summary_large_image", title: t.name, images: [t.image_url] },
+    twitter: { card: "summary_large_image", title: t.name, images: [tokenImageUrl(t)] },
   };
 }
 
@@ -69,7 +70,7 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
       <div className="mt-4 grid items-start gap-8 md:grid-cols-2">
         {/* artwork */}
         <div className="reveal overflow-hidden rounded-card border border-line bg-surface shadow-[0_34px_64px_-34px_rgba(0,0,0,0.3)]">
-          <Image src={t.image_url} alt={t.name} width={1024} height={1024}
+          <Image src={tokenImageUrl(t)} alt={t.name} width={1024} height={1024}
             sizes="(max-width:768px) 100vw, 50vw"
             className="block aspect-square w-full object-cover" />
         </div>
