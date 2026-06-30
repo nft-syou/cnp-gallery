@@ -1,6 +1,13 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fbfaf5" },
+    { media: "(prefers-color-scheme: dark)", color: "#14110b" },
+  ],
+};
 
 // Inter is the CNP brand's Latin face (the official site pairs it with a
 // Japanese stack). It carries the wordmark, headings and numerals; Japanese
@@ -53,8 +60,15 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ja" className={`${inter.variable} h-full antialiased`}>
+    <html lang="ja" suppressHydrationWarning className={`${inter.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
+        {/* set the theme class before paint — no flash of the wrong theme */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var t=localStorage.getItem('theme');var d=t?t==='dark':matchMedia('(prefers-color-scheme:dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();",
+          }}
+        />
         {children}
         <footer className="mt-auto border-t border-line">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-7 text-xs text-faint">

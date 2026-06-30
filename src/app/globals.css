@@ -1,11 +1,18 @@
 @import "tailwindcss";
 
+/* class-based dark mode: `dark:` utilities respond to <html class="dark"> */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ============================================================
    CNP Gallery — brand-aligned theme
    Matches the official CryptoNinja Partners site: bright off-white
    canvas, the signature CNP yellow (#FFD600) as hero accent with a
    highlighter-marker motif, Inter + a Japanese system stack, flat &
    friendly. The colourful NFT art pops on the light ground.
+
+   Colours are semantic CSS variables. Dark mode (below) only re-points
+   those variables, so every component that uses bg-bg / text-ink / …
+   adapts automatically — no per-component dark: classes needed.
    ============================================================ */
 @theme {
   /* surfaces — warm paper */
@@ -21,9 +28,11 @@
   --color-muted:  #6c685f;
   --color-faint:  #a29d92;
 
-  /* signature — CNP yellow */
+  /* signature — CNP yellow. `on-cnp` is the ink that sits on the yellow accent;
+     it stays dark in both themes (the yellow never changes) — never override it. */
   --color-cnp:      #ffd600;
   --color-cnp-deep: #ffca00;
+  --color-on-cnp:   #1d1b16;
   --color-link:     #0055a4;
   --color-burnt:    #b34700;
 
@@ -51,6 +60,32 @@
     "Yu Gothic", "YuGothic", "Noto Sans JP", "Meiryo", system-ui, sans-serif;
 }
 
+/* ---------------------------------------------- dark mode
+   Warm near-black ground (never pure black), elevated cards a touch
+   lighter, the same CNP yellow as the hero accent. The vibrant element/
+   clan hues are kept — they read well on the dark ground. */
+html.dark {
+  color-scheme: dark;
+
+  --color-bg:        #14110b;
+  --color-bg-2:      #1b1810;  /* darker inner wells (image placeholders, chips) */
+  --color-surface:   #1e1a13;  /* cards — lifted above the page */
+  --color-surface-2: #241f17;
+  --color-line:      #2c2820;
+  --color-line-2:    #3a352b;
+
+  --color-ink:    #f4f1e8;
+  --color-muted:  #b5afa1;
+  --color-faint:  #8d8779;
+
+  --color-link:   #6cb0ff;
+  --color-burnt:  #ff8a3d;
+
+  --color-cream: #2a2410;
+  --color-peach: #2a1f14;
+  --color-sky:   #112231;
+}
+
 /* ---------------------------------------------- base */
 html { color-scheme: light; }
 
@@ -66,21 +101,30 @@ body {
     radial-gradient(900px 480px at -6% -2%, rgba(214, 238, 255, 0.55), transparent 56%);
   background-attachment: fixed;
 }
+.dark body {
+  background-image:
+    radial-gradient(1200px 540px at 82% -12%, rgba(255, 214, 0, 0.07), transparent 60%),
+    radial-gradient(900px 480px at -6% -2%, rgba(110, 160, 230, 0.06), transparent 56%);
+}
 
-::selection { background: var(--color-cnp); color: var(--color-ink); }
+::selection { background: var(--color-cnp); color: #1d1b16; }
 
 * { scrollbar-width: thin; scrollbar-color: var(--color-line-2) transparent; }
 *::-webkit-scrollbar { width: 9px; height: 9px; }
 *::-webkit-scrollbar-thumb { background: var(--color-line-2); border-radius: 9px; border: 2px solid transparent; background-clip: content-box; }
 *::-webkit-scrollbar-thumb:hover { background: var(--color-faint); }
 
-/* the CNP highlighter-marker — a yellow swipe behind inline text */
+/* the CNP highlighter-marker — a yellow swipe behind inline text.
+   Dark mode drops it to an underline so the light text stays legible. */
 .marker {
   background-image: linear-gradient(transparent 56%, var(--color-cnp) 56%, var(--color-cnp) 92%, transparent 92%);
   background-repeat: no-repeat;
   padding-inline: 0.08em;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
+}
+.dark .marker {
+  background-image: linear-gradient(transparent 84%, var(--color-cnp) 84%, var(--color-cnp) 96%, transparent 96%);
 }
 
 /* ---------------------------------------------- motion */
@@ -95,13 +139,13 @@ body {
   .drawer-backdrop { animation: fade-in 0.2s ease both; }
 }
 
-/* ---------------------------------------------- form controls (light) */
+/* ---------------------------------------------- form controls */
 input[type="checkbox"] {
   appearance: none;
   width: 15px; height: 15px;
   border: 1.5px solid var(--color-line-2);
   border-radius: 5px;
-  background: #fff;
+  background: var(--color-surface);
   cursor: pointer;
   flex: none;
   transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
@@ -117,12 +161,12 @@ input[type="checkbox"]:checked::after {
   display: block;
   width: 4px; height: 8px;
   margin: 1px auto 0;
-  border: solid var(--color-ink);
+  border: solid #1d1b16;          /* dark tick — always on the yellow box */
   border-width: 0 2px 2px 0;
   transform: rotate(42deg);
 }
 input[type="number"] {
-  background: #fff;
+  background: var(--color-surface);
   border: 1px solid var(--color-line-2);
   border-radius: 8px;
   color: var(--color-ink);

@@ -21,7 +21,7 @@ export function FacetGroup({ field, label, facets, selected }:
         <span className="inline-flex items-center gap-1.5">
           {label}
           {selected.length > 0 && (
-            <span className="rounded-full bg-cnp px-1.5 text-[9px] font-bold leading-[14px] text-ink">{selected.length}</span>
+            <span className="rounded-full bg-cnp px-1.5 text-[9px] font-bold leading-[14px] text-on-cnp">{selected.length}</span>
           )}
         </span>
         <span aria-hidden className="text-faint transition-transform duration-200 group-open:rotate-90">›</span>

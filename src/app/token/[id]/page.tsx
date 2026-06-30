@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { cache } from "react";
 import { getToken } from "@/lib/db";
@@ -7,6 +8,7 @@ import { toRadarData } from "@/lib/stats";
 import { StatRadar } from "@/components/StatRadar";
 import { RefreshButton } from "@/components/RefreshButton";
 import { BackLink } from "@/components/BackLink";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { CATEGORICAL_FIELDS } from "@/lib/fields";
 
 // CNP collection on OpenSea (Ethereum). `/item/ethereum/{contract}/{tokenId}`.
@@ -51,12 +53,21 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
   const clan = CLAN_COLOR[t.clan] ?? "text-muted";
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-5 pb-16 pt-8">
-      <BackLink className="inline-flex items-center gap-1.5 text-xs font-medium tracking-wide text-muted transition-colors hover:text-ink">
+    <main className="mx-auto w-full max-w-5xl px-5 pb-16 pt-6">
+      {/* top bar: the logo returns to the unfiltered gallery; theme toggle */}
+      <div className="flex items-center justify-between gap-3">
+        <Link href="/" aria-label="CNP Gallery トップ（絞り込みを解除）" className="inline-flex rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cnp-deep">
+          <Image src="/logo.png" alt="CNP Gallery" width={480} height={159} priority unoptimized className="h-8 w-auto sm:h-9 dark:hidden" />
+          <Image src="/logo-light.png" alt="CNP Gallery" width={480} height={159} priority unoptimized className="hidden h-8 w-auto sm:h-9 dark:block" />
+        </Link>
+        <ThemeToggle />
+      </div>
+
+      <BackLink className="mt-6 inline-flex items-center gap-1.5 text-xs font-medium tracking-wide text-muted transition-colors hover:text-ink">
         <span aria-hidden>←</span> ギャラリーへ戻る
       </BackLink>
 
-      <div className="mt-5 grid items-start gap-8 md:grid-cols-2">
+      <div className="mt-4 grid items-start gap-8 md:grid-cols-2">
         {/* artwork */}
         <div className="reveal overflow-hidden rounded-card border border-line bg-surface shadow-[0_34px_64px_-34px_rgba(0,0,0,0.3)]">
           <Image src={t.image_url} alt={t.name} width={1024} height={1024}
@@ -66,8 +77,8 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
 
         {/* dossier */}
         <div className="reveal" style={{ animationDelay: "70ms" }}>
-          <span className={`inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-0.5 text-[11px] font-bold ${clan}`}>
-            <span aria-hidden className="h-1 w-1 rounded-full bg-current" />
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-0.5 text-[11px] font-bold text-muted">
+            <span aria-hidden className={`h-1.5 w-1.5 rounded-full bg-current ${clan}`} />
             {t.clan || "—"}
           </span>
           <h1 className="mt-2.5 font-display text-[26px] font-black leading-tight text-ink">

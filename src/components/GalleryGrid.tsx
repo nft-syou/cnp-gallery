@@ -8,7 +8,8 @@ export function GalleryGrid({ tokens, nextHref }: { tokens: TokenRow[]; nextHref
         {tokens.map((t, i) => (
           // staggered rise-in; cap the delay so deep pages don't crawl in
           <div key={t.token_id} className="reveal" style={{ animationDelay: `${Math.min(i, 12) * 35}ms` }}>
-            <TokenCard t={t} />
+            {/* eager-load the first rows so the LCP image gets fetchpriority=high */}
+            <TokenCard t={t} priority={i < 8} />
           </div>
         ))}
       </div>
@@ -17,7 +18,7 @@ export function GalleryGrid({ tokens, nextHref }: { tokens: TokenRow[]; nextHref
         <div className="mt-10 text-center">
           <a
             href={nextHref}
-            className="group inline-flex items-center gap-2 rounded-full bg-cnp px-8 py-3 text-sm font-bold text-ink shadow-[0_12px_26px_-12px_rgba(255,202,0,0.95)] transition hover:-translate-y-0.5 hover:bg-cnp-deep"
+            className="group inline-flex items-center gap-2 rounded-full bg-cnp px-8 py-3 text-sm font-bold text-on-cnp shadow-[0_12px_26px_-12px_rgba(255,202,0,0.95)] transition hover:-translate-y-0.5 hover:bg-cnp-deep"
           >
             もっと見る
             <span aria-hidden className="transition group-hover:translate-y-0.5">↓</span>
