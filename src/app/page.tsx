@@ -6,6 +6,7 @@ import { FilterSidebar } from "@/components/FilterSidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo, LOGO_SRCSET } from "@/components/Logo";
 import { SortControl } from "@/components/SortControl";
+import { Pagination } from "@/components/Pagination";
 
 // Logo render width: 109px under `sm`, 133px at `sm`+ (h-9 / h-11 at aspect 320/106).
 const LOGO_SIZES = "(min-width: 640px) 133px, 109px";
@@ -21,17 +22,20 @@ export default async function Home({ searchParams }:
   const sp = await searchParams;
   const filters = parseFilters(sp);
   const [tokens, facetData, total] = await Promise.all([
-    listTokens(filters, PAGE + 1), facets(filters), totalCount(filters),
+    listTokens(filters, PAGE), facets(filters), totalCount(filters),
   ]);
-  const hasMore = tokens.length > PAGE;
-  const page = tokens.slice(0, PAGE);
-  let nextHref: string | null = null;
-  if (hasMore) {
+  const totalPages = Math.max(1, Math.ceil(total / PAGE));
+  const currentPage = Math.min(totalPages, Math.floor((filters.cursor ?? 0) / PAGE) + 1);
+
+  // build a page URL that preserves the current filters + sort
+  const hrefForPage = (p: number): string => {
     const params = new URLSearchParams(
       Object.entries(sp).map(([k, v]) => [k, Array.isArray(v) ? (v[0] ?? "") : v ?? ""] as [string, string]));
-    params.set("cursor", String((filters.cursor ?? 0) + PAGE));
-    nextHref = `/?${params.toString()}`;
-  }
+    if (p <= 1) params.delete("cursor");
+    else params.set("cursor", String((p - 1) * PAGE));
+    const qs = params.toString();
+    return qs ? `/?${qs}` : "/";
+  };
 
   return (
     <main className="mx-auto w-full max-w-6xl px-5 pt-9 pb-24 md:pb-16">
@@ -77,7 +81,8 @@ export default async function Home({ searchParams }:
       <div className="flex items-start gap-7">
         <FilterSidebar facets={facetData} filters={filters} />
         <div className="min-w-0 flex-1">
-          <GalleryGrid tokens={page} nextHref={nextHref} />
+          <GalleryGrid tokens={tokens} />
+          <Pagination currentPage={currentPage} totalPages={totalPages} hrefFor={hrefForPage} />
         </div>
       </div>
     </main>
