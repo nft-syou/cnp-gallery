@@ -1,0 +1,20 @@
+# CNP Gallery
+
+> CryptoNinja Partners (CNP) の NFT を、トレイトと 5 遁術ステータスで高速に絞り込み・検索できる非公式ギャラリー。
+
+CNP Gallery は CryptoNinja Partners のリビール済み NFT を一覧・検索できる、ファンによる非公式サイトです。各トークンのトレイト（CHARACTER / CLAN / NINJUTSU / WEAPON / COSPLAY / ACCESSORIES）と、5 つの遁術ステータス（MOKUTON・KATON・DOTON・KINTON・SUITON、各 0〜10）をレーダーチャートで確認できます。レアリティの算出・ランキングは提供していません。
+
+## Pages
+- [ギャラリー（トップ）](https://cnp-gallery.syou.io/): トレイト・遁術で絞り込める一覧。token ID 検索にも対応。
+- [トークン詳細](https://cnp-gallery.syou.io/token/1): 画像・全トレイト・5 遁術レーダー・オリジナル画像ダウンロード・OpenSea リンク。
+
+## Data sources
+- メタデータ: https://data.cryptoninjapartners.com/new/json/{tokenId}.json
+- 画像: https://data.cryptoninjapartners.com/images/{tokenId}.png
+- コントラクト (Ethereum): 0x138a5c693279b6cd82f48d4bef563251bc15adce
+- OpenSea: https://opensea.io/item/ethereum/0x138a5c693279b6cd82f48d4bef563251bc15adce/{tokenId}
+
+## About
+- 公式サイト: https://www.cryptoninja-partners.xyz/
+- ソースコード: https://github.com/nft-syou/cnp-gallery
+- 非公式のファンサイトです。CryptoNinja Partners の名称・キャラクター・作品に関する権利は各権利者に帰属します。

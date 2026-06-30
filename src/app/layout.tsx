@@ -15,7 +15,7 @@ const inter = Inter({
 const SITE = "https://cnp-gallery.syou.io";
 const TITLE = "CNP Gallery — CryptoNinja Partners NFT ギャラリー";
 const DESCRIPTION =
-  "CryptoNinja Partners (CNP) NFT ギャラリー。リビール済み 22,222 体を、トレイトと 5 遁術ステータスで高速に絞り込み・検索できます。";
+  "CryptoNinja Partners (CNP) の NFT を、トレイトと 5 遁術ステータスで高速に絞り込み・検索できるギャラリー。";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),

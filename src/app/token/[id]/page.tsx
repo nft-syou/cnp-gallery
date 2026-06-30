@@ -1,13 +1,16 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import type { Metadata } from "next";
 import { cache } from "react";
 import { getToken } from "@/lib/db";
 import { toRadarData } from "@/lib/stats";
 import { StatRadar } from "@/components/StatRadar";
 import { RefreshButton } from "@/components/RefreshButton";
+import { BackLink } from "@/components/BackLink";
 import { CATEGORICAL_FIELDS } from "@/lib/fields";
+
+// CNP collection on OpenSea (Ethereum). `/item/ethereum/{contract}/{tokenId}`.
+const OPENSEA_ITEM = "https://opensea.io/item/ethereum/0x138a5c693279b6cd82f48d4bef563251bc15adce";
 
 // No `force-dynamic` and no generateStaticParams: this route renders on-demand
 // the first time an id is requested, then the result is cached and served from
@@ -49,9 +52,9 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
 
   return (
     <main className="mx-auto w-full max-w-5xl px-5 pb-16 pt-8">
-      <Link href="/" className="inline-flex items-center gap-1.5 text-xs font-medium tracking-wide text-muted transition-colors hover:text-ink">
+      <BackLink className="inline-flex items-center gap-1.5 text-xs font-medium tracking-wide text-muted transition-colors hover:text-ink">
         <span aria-hidden>←</span> ギャラリーへ戻る
-      </Link>
+      </BackLink>
 
       <div className="mt-5 grid items-start gap-8 md:grid-cols-2">
         {/* artwork */}
@@ -63,30 +66,39 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
 
         {/* dossier */}
         <div className="reveal" style={{ animationDelay: "70ms" }}>
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <span className={`inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-0.5 text-[11px] font-bold ${clan}`}>
-                <span aria-hidden className="h-1 w-1 rounded-full bg-current" />
-                {t.clan || "—"}
-              </span>
-              <h1 className="mt-2.5 font-display text-[26px] font-black leading-tight text-ink">
-                <span className="marker">{t.name}</span>
-              </h1>
-              <p className="mt-1.5 text-xs font-medium tabular-nums tracking-wide text-faint">TOKEN #{t.token_id}</p>
-            </div>
-            <div className="flex flex-none items-center gap-2">
-              <a
-                href={`/api/tokens/${t.token_id}/image`}
-                download={`cnp-${t.token_id}.png`}
-                className="inline-flex items-center gap-1.5 rounded-full border border-line-2 px-3.5 py-1.5 text-xs font-bold text-muted transition-colors hover:border-cnp-deep hover:bg-cnp/25 hover:text-ink"
-              >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16" />
-                </svg>
-                画像
-              </a>
-              <RefreshButton tokenId={t.token_id} />
-            </div>
+          <span className={`inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-0.5 text-[11px] font-bold ${clan}`}>
+            <span aria-hidden className="h-1 w-1 rounded-full bg-current" />
+            {t.clan || "—"}
+          </span>
+          <h1 className="mt-2.5 font-display text-[26px] font-black leading-tight text-ink">
+            <span className="marker">{t.name}</span>
+          </h1>
+          <p className="mt-1.5 text-xs font-medium tabular-nums tracking-wide text-faint">TOKEN #{t.token_id}</p>
+
+          {/* actions: marketplace (primary) + original image + metadata refresh */}
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <a
+              href={`${OPENSEA_ITEM}/${t.token_id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#2081e2] px-4 py-1.5 text-xs font-bold text-white shadow-[0_8px_20px_-8px_rgba(32,129,226,0.9)] transition hover:bg-[#1868b7]"
+            >
+              OpenSea で見る
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M7 17 17 7M8 7h9v9" />
+              </svg>
+            </a>
+            <a
+              href={`/api/tokens/${t.token_id}/image`}
+              download={`cnp-${t.token_id}.png`}
+              className="inline-flex items-center gap-1.5 rounded-full border border-line-2 px-3.5 py-1.5 text-xs font-bold text-muted transition-colors hover:border-cnp-deep hover:bg-cnp/25 hover:text-ink"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16" />
+              </svg>
+              画像
+            </a>
+            <RefreshButton tokenId={t.token_id} />
           </div>
 
           {/* 5 遁術 radar */}

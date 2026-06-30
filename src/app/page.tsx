@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { parseFilters } from "@/lib/filters";
 import { listTokens, facets, totalCount } from "@/lib/db";
 import { GalleryGrid } from "@/components/GalleryGrid";
@@ -32,15 +33,18 @@ export default async function Home({ searchParams }:
       {/* ---- masthead ---- */}
       <header className="flex flex-wrap items-end justify-between gap-5 pb-7">
         <h1 className="flex items-center">
-          <Image
-            src="/logo.png"
-            alt="CNP Gallery"
-            width={720}
-            height={238}
-            priority
-            unoptimized
-            className="h-9 w-auto sm:h-11"
-          />
+          {/* logo doubles as a "reset" — links to the bare gallery URL, clearing every filter */}
+          <Link href="/" aria-label="CNP Gallery トップ（絞り込みを解除）" className="inline-flex rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cnp-deep">
+            <Image
+              src="/logo.png"
+              alt="CNP Gallery"
+              width={720}
+              height={238}
+              priority
+              unoptimized
+              className="h-9 w-auto sm:h-11"
+            />
+          </Link>
         </h1>
 
         <form action="/token" className="relative w-full sm:w-auto">
