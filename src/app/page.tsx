@@ -1,10 +1,13 @@
-import Image from "next/image";
 import Link from "next/link";
 import { parseFilters } from "@/lib/filters";
 import { listTokens, facets, totalCount } from "@/lib/db";
 import { GalleryGrid } from "@/components/GalleryGrid";
 import { FilterSidebar } from "@/components/FilterSidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Logo, LOGO_SRCSET } from "@/components/Logo";
+
+// Logo render width: 109px under `sm`, 133px at `sm`+ (h-9 / h-11 at aspect 320/106).
+const LOGO_SIZES = "(min-width: 640px) 133px, 109px";
 
 // No `force-dynamic`: the page already renders dynamically because it awaits
 // `searchParams`. The cache layer that matters here is the per-query
@@ -31,16 +34,14 @@ export default async function Home({ searchParams }:
 
   return (
     <main className="mx-auto w-full max-w-6xl px-5 pt-9 pb-24 md:pb-16">
-      {/* the logo is the mobile LCP — preload it at high priority (React 19 hoists this to <head>) */}
-      <link rel="preload" as="image" href="/logo.png" fetchPriority="high" />
+      {/* the logo is the mobile LCP — preload the responsive image at high priority (React 19 hoists this to <head>) */}
+      <link rel="preload" as="image" href="/logo.png" imageSrcSet={LOGO_SRCSET} imageSizes={LOGO_SIZES} fetchPriority="high" />
       {/* ---- masthead ---- */}
       <header className="flex flex-wrap items-center justify-between gap-4 pb-7">
         <h1 className="flex items-center">
           {/* logo doubles as a "reset" — links to the bare gallery URL, clearing every filter */}
           <Link href="/" aria-label="CNP Gallery トップ（絞り込みを解除）" className="inline-flex rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cnp-deep">
-            {/* one file for both themes — recoloured to near-white in dark via a filter,
-                so the off-theme variant is never downloaded (was shipping a hidden 2nd logo) */}
-            <Image src="/logo.png" alt="CNP Gallery" width={320} height={106} loading="eager" unoptimized className="h-9 w-auto sm:h-11 dark:brightness-0 dark:invert" />
+            <Logo sizes={LOGO_SIZES} className="h-9 w-auto sm:h-11 dark:brightness-0 dark:invert" />
           </Link>
         </h1>
 
