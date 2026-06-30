@@ -6,7 +6,7 @@ const LABELS: Record<SortKey, string> = {
   "id-asc": "番号 小→大",
   "id-desc": "番号 大→小",
   character: "キャラクター",
-  clan: "一族",
+  clan: "クラン",
   total: "ステータス合計",
 };
 

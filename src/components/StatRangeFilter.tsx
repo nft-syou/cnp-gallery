@@ -19,7 +19,7 @@ export function StatRangeFilter() {
   return (
     <details key={sp.toString()} className="group border-b border-line py-2.5">
       <summary className="flex cursor-pointer items-center justify-between text-[11px] font-bold uppercase tracking-[0.1em] text-muted transition-colors hover:text-ink">
-        ステータス · 5遁術
+        ステータス
         <span aria-hidden className="text-faint transition-transform duration-200 group-open:rotate-90">›</span>
       </summary>
       <div className="mt-2.5 space-y-1.5">

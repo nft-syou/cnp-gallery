@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   if (!t) return { title: "Not found | CNP Gallery" };
   return {
     title: `${t.name} | CNP Gallery`,
-    description: `${t.name}（CLAN: ${t.clan || "—"}）— CNP Gallery で CryptoNinja Partners #${t.token_id} のトレイトと5遁術ステータスを見る。`,
+    description: `${t.name}（CLAN: ${t.clan || "—"}）— CNP Gallery で CryptoNinja Partners #${t.token_id} のトレイトとステータスを見る。`,
     alternates: { canonical: `/token/${t.token_id}` },
     // OGP crawlers fetch the origin URL directly; the CF image loader is client-side only
     openGraph: {
