@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { parseFilters } from "@/lib/filters";
+import { parseFilters, parsePerPage } from "@/lib/filters";
 import { listTokens, facets, totalCount } from "@/lib/db";
 import { GalleryGrid } from "@/components/GalleryGrid";
 import { FilterSidebar } from "@/components/FilterSidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo, LOGO_SRCSET } from "@/components/Logo";
 import { SortControl } from "@/components/SortControl";
+import { PerPageControl } from "@/components/PerPageControl";
 import { Pagination } from "@/components/Pagination";
 
 // Logo render width: 109px under `sm`, 133px at `sm`+ (h-9 / h-11 at aspect 320/106).
@@ -15,24 +16,24 @@ const LOGO_SIZES = "(min-width: 640px) 133px, 109px";
 // `searchParams`. The cache layer that matters here is the per-query
 // `unstable_cache(..., { tags: [TAG_LIST] })` in @/lib/db — the refresh route
 // busts TAG_LIST via revalidateTag so the gallery refreshes after a sync.
-const PAGE = 48;
 
 export default async function Home({ searchParams }:
   { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;
   const filters = parseFilters(sp);
+  const per = parsePerPage(sp);
   const [tokens, facetData, total] = await Promise.all([
-    listTokens(filters, PAGE), facets(filters), totalCount(filters),
+    listTokens(filters, per), facets(filters), totalCount(filters),
   ]);
-  const totalPages = Math.max(1, Math.ceil(total / PAGE));
-  const currentPage = Math.min(totalPages, Math.floor((filters.cursor ?? 0) / PAGE) + 1);
+  const totalPages = Math.max(1, Math.ceil(total / per));
+  const currentPage = Math.min(totalPages, Math.floor((filters.cursor ?? 0) / per) + 1);
 
-  // build a page URL that preserves the current filters + sort
+  // build a page URL that preserves the current filters, sort, and page size
   const hrefForPage = (p: number): string => {
     const params = new URLSearchParams(
       Object.entries(sp).map(([k, v]) => [k, Array.isArray(v) ? (v[0] ?? "") : v ?? ""] as [string, string]));
     if (p <= 1) params.delete("cursor");
-    else params.set("cursor", String((p - 1) * PAGE));
+    else params.set("cursor", String((p - 1) * per));
     const qs = params.toString();
     return qs ? `/?${qs}` : "/";
   };
@@ -66,8 +67,9 @@ export default async function Home({ searchParams }:
         </div>
       </header>
 
-      {/* ---- sort ---- */}
-      <div className="mb-6 flex items-center justify-end border-t border-line pt-3">
+      {/* ---- toolbar: page size + sort ---- */}
+      <div className="mb-6 flex flex-wrap items-center justify-end gap-2 border-t border-line pt-3">
+        <PerPageControl per={per} />
         <SortControl sort={filters.sort} />
       </div>
 

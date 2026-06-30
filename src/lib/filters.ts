@@ -7,6 +7,11 @@ export const SORT_KEYS = ["id-asc", "id-desc", "character", "clan", "total"] as 
 export type SortKey = (typeof SORT_KEYS)[number];
 export const DEFAULT_SORT: SortKey = "id-asc";
 
+// How many tokens per page. A fixed whitelist so the `per` query param can't be
+// abused to request an unbounded page.
+export const PER_PAGE_OPTIONS = [24, 48, 96] as const;
+export const DEFAULT_PER = 48;
+
 export interface Filters {
   categorical: Partial<Record<CategoricalField, string[]>>;
   stats: Partial<Record<StatField, { min: number; max: number }>>;
@@ -34,4 +39,10 @@ export function parseFilters(params: Params): Filters {
   const cRaw = first(params.cursor);
   const cursor = cRaw && !Number.isNaN(Number(cRaw)) ? Math.max(0, Math.floor(Number(cRaw))) : null;
   return { categorical, stats, sort, cursor };
+}
+
+// Page size — validated against the whitelist; anything else falls back to the default.
+export function parsePerPage(params: Params): number {
+  const n = Number(first(params.per));
+  return (PER_PAGE_OPTIONS as readonly number[]).includes(n) ? n : DEFAULT_PER;
 }

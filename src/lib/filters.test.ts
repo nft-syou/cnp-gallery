@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseFilters } from "./filters";
+import { parseFilters, parsePerPage } from "./filters";
 
 describe("parseFilters", () => {
   it("parses comma lists, stat ranges, sort, cursor (offset)", () => {
@@ -20,5 +20,11 @@ describe("parseFilters", () => {
     expect(parseFilters({ sort: "desc" }).sort).toBe("id-asc"); // legacy/invalid → default
     expect(parseFilters({ bogus: "x" }).sort).toBe("id-asc");
     expect(parseFilters({ bogus: "x" }).cursor).toBeNull();
+  });
+  it("parsePerPage only accepts whitelisted sizes", () => {
+    expect(parsePerPage({ per: "24" })).toBe(24);
+    expect(parsePerPage({ per: "96" })).toBe(96);
+    expect(parsePerPage({ per: "1000" })).toBe(48); // off-list → default
+    expect(parsePerPage({})).toBe(48);
   });
 });
