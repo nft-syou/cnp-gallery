@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { cache } from "react";
 import { getToken } from "@/lib/db";
 import { tokenImageUrl } from "@/lib/csv";
+import cfLoader from "@/lib/image-loader";
 import { toRadarData } from "@/lib/stats";
 import { StatRadar } from "@/components/StatRadar";
 import { RefreshButton } from "@/components/RefreshButton";
@@ -54,8 +55,20 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
   if (!t) notFound();
   const clan = CLAN_COLOR[t.clan] ?? "text-muted";
 
+  // The artwork is the LCP. Build a preload srcset that mirrors next/image's
+  // generated one (widths = Next's default device/image sizes via our CF loader)
+  // so the browser preloads exactly the size it paints — next/image's own
+  // preload omits fetchpriority, which is the only lcp-discovery gap.
+  const artSrc = tokenImageUrl(t);
+  const artSizes = "(max-width:768px) 100vw, 50vw";
+  const artSrcSet = [384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840]
+    .map((w) => `${cfLoader({ src: artSrc, width: w })} ${w}w`)
+    .join(", ");
+
   return (
     <main className="mx-auto w-full max-w-5xl px-5 pb-16 pt-6">
+      {/* preload the LCP artwork at high priority (React 19 hoists this to <head>) */}
+      <link rel="preload" as="image" imageSrcSet={artSrcSet} imageSizes={artSizes} fetchPriority="high" />
       {/* top bar: the logo returns to the unfiltered gallery; theme toggle */}
       <div className="flex items-center justify-between gap-3">
         <Link href="/" aria-label="CNP Gallery トップ（絞り込みを解除）" className="inline-flex rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cnp-deep">
@@ -69,10 +82,10 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
       </BackLink>
 
       <div className="mt-4 grid items-start gap-8 md:grid-cols-2">
-        {/* artwork */}
+        {/* artwork — the LCP element, so load it eagerly (not lazy) */}
         <div className="reveal overflow-hidden rounded-card border border-line bg-surface shadow-[0_34px_64px_-34px_rgba(0,0,0,0.3)]">
-          <Image src={tokenImageUrl(t)} alt={t.name} width={1024} height={1024}
-            sizes="(max-width:768px) 100vw, 50vw"
+          <Image src={artSrc} alt={t.name} width={1024} height={1024}
+            sizes={artSizes} loading="eager"
             className="block aspect-square w-full object-cover" />
         </div>
 
@@ -93,7 +106,7 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
               href={`${OPENSEA_ITEM}/${t.token_id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full bg-[#2081e2] px-4 py-1.5 text-xs font-bold text-white shadow-[0_8px_20px_-8px_rgba(32,129,226,0.9)] transition hover:bg-[#1868b7]"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#1868b7] px-4 py-1.5 text-xs font-bold text-white shadow-[0_8px_20px_-8px_rgba(24,104,183,0.9)] transition hover:bg-[#125a9e]"
             >
               OpenSea で見る
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
