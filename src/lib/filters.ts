@@ -1,10 +1,17 @@
 import { CATEGORICAL_FIELDS, STAT_FIELDS, type CategoricalField, type StatField } from "./fields";
 
+// Sort options surfaced in the gallery. Each maps to a fixed ORDER BY in
+// query.ts (never interpolated from user input), so the value is safe to trust
+// once validated here.
+export const SORT_KEYS = ["id-asc", "id-desc", "character", "clan", "total"] as const;
+export type SortKey = (typeof SORT_KEYS)[number];
+export const DEFAULT_SORT: SortKey = "id-asc";
+
 export interface Filters {
   categorical: Partial<Record<CategoricalField, string[]>>;
   stats: Partial<Record<StatField, { min: number; max: number }>>;
-  sort: "asc" | "desc";
-  cursor: number | null;
+  sort: SortKey;
+  cursor: number | null; // page offset (rows to skip); null = first page
 }
 
 type Params = Record<string, string | string[] | undefined>;
@@ -22,8 +29,9 @@ export function parseFilters(params: Params): Filters {
     const max = first(params[`${s}_max`]);
     if (min || max) stats[s] = { min: Number(min ?? 1), max: Number(max ?? 10) };
   }
-  const sort = first(params.sort) === "desc" ? "desc" : "asc";
+  const sRaw = first(params.sort);
+  const sort: SortKey = (SORT_KEYS as readonly string[]).includes(sRaw ?? "") ? (sRaw as SortKey) : DEFAULT_SORT;
   const cRaw = first(params.cursor);
-  const cursor = cRaw && !Number.isNaN(Number(cRaw)) ? Number(cRaw) : null;
+  const cursor = cRaw && !Number.isNaN(Number(cRaw)) ? Math.max(0, Math.floor(Number(cRaw))) : null;
   return { categorical, stats, sort, cursor };
 }

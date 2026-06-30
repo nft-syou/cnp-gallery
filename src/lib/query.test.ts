@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { buildWhere, buildListQuery, buildFacetQuery } from "./query";
 import type { Filters } from "./filters";
 
-const base: Filters = { categorical: {}, stats: {}, sort: "asc", cursor: null };
+const base: Filters = { categorical: {}, stats: {}, sort: "id-asc", cursor: null };
 
 describe("buildWhere", () => {
   it("OR within a field, AND across fields, plus stat range", () => {
@@ -20,19 +20,25 @@ describe("buildWhere", () => {
 });
 
 describe("buildListQuery", () => {
-  it("adds keyset cursor and ascending order", () => {
+  it("paginates by offset (cursor) with ascending id order", () => {
     const f: Filters = { ...base, categorical: { clan: ["Iga"] }, cursor: 100 };
     const { sql, params } = buildListQuery(f, 24);
     expect(sql).toBe(
-      "SELECT * FROM tokens WHERE clan IN (?) AND token_id > ? ORDER BY token_id ASC LIMIT ?");
-    expect(params).toEqual(["Iga", 100, 24]);
+      "SELECT * FROM tokens WHERE clan IN (?) ORDER BY token_id ASC LIMIT ? OFFSET ?");
+    expect(params).toEqual(["Iga", 24, 100]);
   });
-  it("descending uses < cursor and DESC order", () => {
-    const f: Filters = { ...base, sort: "desc", cursor: 5000 };
-    const { sql, params } = buildListQuery(f, 24);
-    expect(sql).toBe(
-      "SELECT * FROM tokens WHERE token_id < ? ORDER BY token_id DESC LIMIT ?");
-    expect(params).toEqual([5000, 24]);
+  it("id-desc orders DESC; null cursor is offset 0", () => {
+    const { sql, params } = buildListQuery({ ...base, sort: "id-desc" }, 24);
+    expect(sql).toBe("SELECT * FROM tokens ORDER BY token_id DESC LIMIT ? OFFSET ?");
+    expect(params).toEqual([24, 0]);
+  });
+  it("total sorts by the stat sum, character/clan by their column", () => {
+    expect(buildListQuery({ ...base, sort: "total" }, 24).sql).toBe(
+      "SELECT * FROM tokens ORDER BY (mokuton + katon + doton + kinton + suiton) DESC, token_id ASC LIMIT ? OFFSET ?");
+    expect(buildListQuery({ ...base, sort: "character" }, 24).sql).toBe(
+      "SELECT * FROM tokens ORDER BY character ASC, token_id ASC LIMIT ? OFFSET ?");
+    expect(buildListQuery({ ...base, sort: "clan" }, 24).sql).toBe(
+      "SELECT * FROM tokens ORDER BY clan ASC, token_id ASC LIMIT ? OFFSET ?");
   });
 });
 

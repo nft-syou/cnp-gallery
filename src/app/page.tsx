@@ -5,6 +5,7 @@ import { GalleryGrid } from "@/components/GalleryGrid";
 import { FilterSidebar } from "@/components/FilterSidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo, LOGO_SRCSET } from "@/components/Logo";
+import { SortControl } from "@/components/SortControl";
 
 // Logo render width: 109px under `sm`, 133px at `sm`+ (h-9 / h-11 at aspect 320/106).
 const LOGO_SIZES = "(min-width: 640px) 133px, 109px";
@@ -28,7 +29,7 @@ export default async function Home({ searchParams }:
   if (hasMore) {
     const params = new URLSearchParams(
       Object.entries(sp).map(([k, v]) => [k, Array.isArray(v) ? (v[0] ?? "") : v ?? ""] as [string, string]));
-    params.set("cursor", String(page[page.length - 1].token_id));
+    params.set("cursor", String((filters.cursor ?? 0) + PAGE));
     nextHref = `/?${params.toString()}`;
   }
 
@@ -61,13 +62,15 @@ export default async function Home({ searchParams }:
         </div>
       </header>
 
-      {/* ---- count rule ---- */}
-      <div className="mb-6 flex items-baseline gap-3 border-t border-line pt-3">
+      {/* ---- count rule + sort ---- */}
+      <div className="mb-6 flex items-center gap-3 border-t border-line pt-3">
         <span className="font-display text-2xl font-black leading-none tabular-nums text-ink">
           {total.toLocaleString()}
         </span>
         <span className="text-xs text-muted">体を収蔵</span>
-        <span className="ml-auto text-[11px] uppercase tracking-[0.2em] text-muted">Revealed Collection</span>
+        <div className="ml-auto">
+          <SortControl sort={filters.sort} />
+        </div>
       </div>
 
       {/* ---- body ---- */}

@@ -1,5 +1,15 @@
 import { CATEGORICAL_FIELDS, type CategoricalField } from "./fields";
-import type { Filters } from "./filters";
+import type { Filters, SortKey } from "./filters";
+
+// Fixed ORDER BY per sort key — never built from user input. token_id is the
+// tiebreaker (and sole key for the id sorts) so paging is deterministic.
+const ORDER_BY: Record<SortKey, string> = {
+  "id-asc": "token_id ASC",
+  "id-desc": "token_id DESC",
+  character: "character ASC, token_id ASC",
+  clan: "clan ASC, token_id ASC",
+  total: "(mokuton + katon + doton + kinton + suiton) DESC, token_id ASC",
+};
 
 type Clause = { where: string; params: (string | number)[] };
 
@@ -28,14 +38,10 @@ export function buildWhere(f: Filters): Clause {
 
 export function buildListQuery(f: Filters, limit: number): { sql: string; params: (string | number)[] } {
   const { parts, params } = conditions(f);
-  if (f.cursor !== null) {
-    parts.push(f.sort === "desc" ? "token_id < ?" : "token_id > ?");
-    params.push(f.cursor);
-  }
   const where = parts.length ? `WHERE ${parts.join(" AND ")}` : "";
-  const order = f.sort === "desc" ? "DESC" : "ASC";
-  const sql = `SELECT * FROM tokens ${where} ORDER BY token_id ${order} LIMIT ?`.replace(/\s+/g, " ").trim();
-  params.push(limit);
+  const offset = f.cursor ?? 0;
+  const sql = `SELECT * FROM tokens ${where} ORDER BY ${ORDER_BY[f.sort]} LIMIT ? OFFSET ?`.replace(/\s+/g, " ").trim();
+  params.push(limit, offset);
   return { sql, params };
 }
 

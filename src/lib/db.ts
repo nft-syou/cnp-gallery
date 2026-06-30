@@ -2,7 +2,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { unstable_cache } from "next/cache";
 import type { TokenRow } from "./csv";
 import { CATEGORICAL_FIELDS, type CategoricalField } from "./fields";
-import { buildListQuery, buildFacetQuery } from "./query";
+import { buildListQuery, buildFacetQuery, buildWhere } from "./query";
 import type { Filters } from "./filters";
 
 export interface CloudflareEnv {
@@ -48,10 +48,10 @@ async function facetsUncached(f: Filters): Promise<Record<CategoricalField, Face
 }
 
 async function totalCountUncached(f: Filters): Promise<number> {
-  const { sql, params } = buildListQuery({ ...f, cursor: null }, 1);
-  const countSql = sql.replace("SELECT * FROM tokens", "SELECT COUNT(*) AS n FROM tokens")
-    .replace(/ ORDER BY .*$/, "");
-  const r = await db().prepare(countSql).bind(...params.slice(0, -1)).first<{ n: number }>();
+  // Count matches the filters only — sort and paging don't affect the total.
+  const { where, params } = buildWhere(f);
+  const sql = `SELECT COUNT(*) AS n FROM tokens ${where}`.replace(/\s+/g, " ").trim();
+  const r = await db().prepare(sql).bind(...params).first<{ n: number }>();
   return r?.n ?? 0;
 }
 
