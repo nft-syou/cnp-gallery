@@ -27,7 +27,7 @@ export default async function Home({ searchParams }:
   }
 
   return (
-    <main className="max-w-6xl w-full mx-auto px-5 pt-9 pb-16">
+    <main className="max-w-6xl w-full mx-auto px-5 pt-9 pb-24 md:pb-16">
       {/* ---- masthead ---- */}
       <header className="flex flex-wrap items-end justify-between gap-5 pb-7">
         <div className="flex items-center gap-4">
@@ -47,7 +47,7 @@ export default async function Home({ searchParams }:
           </div>
         </div>
 
-        <form action="/token" className="relative">
+        <form action="/token" className="relative w-full sm:w-auto">
           <label htmlFor="token-search" className="sr-only">token ID で検索</label>
           <span aria-hidden className="absolute left-3.5 top-1/2 -translate-y-1/2 text-faint text-sm">⌕</span>
           <input
@@ -55,7 +55,7 @@ export default async function Home({ searchParams }:
             name="id"
             inputMode="numeric"
             placeholder="token ID を入力"
-            className="w-56 max-w-[60vw] rounded-full bg-surface border border-line pl-9 pr-4 py-2 text-sm text-ink placeholder:text-faint focus:outline-none focus:border-shu focus:bg-surface-2 transition-colors"
+            className="w-full rounded-full border border-line bg-surface py-2 pl-9 pr-4 text-sm text-ink transition-colors placeholder:text-faint focus:border-shu focus:bg-surface-2 focus:outline-none sm:w-56 sm:max-w-[60vw]"
           />
         </form>
       </header>
