@@ -36,9 +36,9 @@ export default async function Home({ searchParams }:
         <h1 className="flex items-center">
           {/* logo doubles as a "reset" — links to the bare gallery URL, clearing every filter */}
           <Link href="/" aria-label="CNP Gallery トップ（絞り込みを解除）" className="inline-flex rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cnp-deep">
-            <Image src="/logo.png" alt="CNP Gallery" width={480} height={159} priority unoptimized className="h-9 w-auto sm:h-11 dark:hidden" />
-            {/* lazy (no priority): stays undownloaded in light mode where it's display:none */}
-            <Image src="/logo-light.png" alt="CNP Gallery" width={480} height={159} loading="lazy" unoptimized className="hidden h-9 w-auto sm:h-11 dark:block" />
+            {/* one file for both themes — recoloured to near-white in dark via a filter,
+                so the off-theme variant is never downloaded (was shipping a hidden 2nd logo) */}
+            <Image src="/logo.png" alt="CNP Gallery" width={480} height={159} priority unoptimized className="h-9 w-auto sm:h-11 dark:brightness-0 dark:invert" />
           </Link>
         </h1>
 

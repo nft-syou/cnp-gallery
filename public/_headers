@@ -9,11 +9,9 @@
 # Root brand assets are NOT content-hashed — cache a week and revalidate.
 # If one must change sooner, rename it (or shorten this) on the next deploy.
 /logo.png
-  Cache-Control: public, max-age=604800
-/logo-light.png
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=2592000
 /og.png
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=2592000
 
 # Icons effectively never change.
 /icon.png
