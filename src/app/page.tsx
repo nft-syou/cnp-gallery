@@ -31,6 +31,8 @@ export default async function Home({ searchParams }:
 
   return (
     <main className="mx-auto w-full max-w-6xl px-5 pt-9 pb-24 md:pb-16">
+      {/* the logo is the mobile LCP — preload it at high priority (React 19 hoists this to <head>) */}
+      <link rel="preload" as="image" href="/logo.png" fetchPriority="high" />
       {/* ---- masthead ---- */}
       <header className="flex flex-wrap items-center justify-between gap-4 pb-7">
         <h1 className="flex items-center">
@@ -38,7 +40,7 @@ export default async function Home({ searchParams }:
           <Link href="/" aria-label="CNP Gallery トップ（絞り込みを解除）" className="inline-flex rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cnp-deep">
             {/* one file for both themes — recoloured to near-white in dark via a filter,
                 so the off-theme variant is never downloaded (was shipping a hidden 2nd logo) */}
-            <Image src="/logo.png" alt="CNP Gallery" width={480} height={159} priority unoptimized className="h-9 w-auto sm:h-11 dark:brightness-0 dark:invert" />
+            <Image src="/logo.png" alt="CNP Gallery" width={480} height={159} loading="eager" unoptimized className="h-9 w-auto sm:h-11 dark:brightness-0 dark:invert" />
           </Link>
         </h1>
 
