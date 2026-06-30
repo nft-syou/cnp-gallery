@@ -16,6 +16,13 @@ export const metadata: Metadata = {
   title: "CNP Gallery",
   description:
     "CryptoNinja Partners (CNP) NFT ギャラリー — リビール済み 22,222 体を高速に閲覧・絞り込み",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: { url: "/apple-icon.png", sizes: "180x180" },
+  },
 };
 
 export default function RootLayout({

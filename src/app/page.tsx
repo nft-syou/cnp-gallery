@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { parseFilters } from "@/lib/filters";
 import { listTokens, facets, totalCount } from "@/lib/db";
 import { GalleryGrid } from "@/components/GalleryGrid";
@@ -30,20 +31,17 @@ export default async function Home({ searchParams }:
     <main className="mx-auto w-full max-w-6xl px-5 pt-9 pb-24 md:pb-16">
       {/* ---- masthead ---- */}
       <header className="flex flex-wrap items-end justify-between gap-5 pb-7">
-        <div className="flex items-center gap-3.5">
-          <span aria-hidden
-            className="seal grid h-11 w-11 place-items-center rounded-[13px] bg-cnp font-display text-xl font-black text-ink shadow-[0_10px_26px_-8px_rgba(255,202,0,0.95)]">
-            忍
-          </span>
-          <div>
-            <h1 className="font-display text-[30px] font-black leading-none tracking-tight text-ink">
-              CNP <span className="marker">Gallery</span>
-            </h1>
-            <p className="mt-2 text-[11px] uppercase tracking-[0.2em] text-muted">
-              CryptoNinja Partners · 22,222 revealed
-            </p>
-          </div>
-        </div>
+        <h1 className="flex items-center">
+          <Image
+            src="/logo.png"
+            alt="CNP Gallery"
+            width={720}
+            height={238}
+            priority
+            unoptimized
+            className="h-9 w-auto sm:h-11"
+          />
+        </h1>
 
         <form action="/token" className="relative w-full sm:w-auto">
           <label htmlFor="token-search" className="sr-only">token ID で検索</label>
