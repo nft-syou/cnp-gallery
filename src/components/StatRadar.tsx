@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip } from "recharts";
 
-// Each 遁術 label painted in its element colour.
+// Each stat label painted in its element colour.
 const ELEMENT: Record<string, string> = {
   MOKUTON: "#41ad5d", KATON: "#ff5a3c", DOTON: "#c98a3e", KINTON: "#efb301", SUITON: "#2e8fe6",
 };

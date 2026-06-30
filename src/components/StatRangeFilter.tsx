@@ -2,7 +2,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { STAT_FIELDS } from "@/lib/fields";
 
-// The five 遁術 in their elemental colours.
+// The five stats in their elemental colours.
 const ELEMENT: Record<string, string> = {
   mokuton: "text-mokuton", katon: "text-katon", doton: "text-doton",
   kinton: "text-kinton", suiton: "text-suiton",

@@ -137,7 +137,7 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
             <RefreshButton tokenId={t.token_id} />
           </div>
 
-          {/* 5 遁術 radar */}
+          {/* stats radar */}
           <section className="mt-6 rounded-2xl border border-line bg-surface p-4">
             <StatRadar data={toRadarData(t)} />
           </section>

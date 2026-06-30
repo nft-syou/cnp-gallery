@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   applicationName: "CNP Gallery",
-  keywords: ["CNP", "CryptoNinja Partners", "クリプトニンジャパートナーズ", "NFT", "ギャラリー", "忍術", "遁術", "CryptoNinja"],
+  keywords: ["CNP", "CryptoNinja Partners", "クリプトニンジャパートナーズ", "NFT", "ギャラリー", "忍術", "CryptoNinja"],
   alternates: { canonical: "/" },
   robots: { index: true, follow: true },
   openGraph: {
