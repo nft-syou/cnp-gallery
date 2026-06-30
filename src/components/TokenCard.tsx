@@ -13,10 +13,10 @@ export function TokenCard({ t }: { t: TokenRow }) {
   return (
     <Link
       href={`/token/${t.token_id}`}
-      className="group relative block overflow-hidden rounded-card border border-line bg-surface transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-line-2 hover:shadow-[0_22px_44px_-22px_rgba(0,0,0,0.85)]"
+      className="group relative block overflow-hidden rounded-card border border-line bg-surface transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-line-2 hover:shadow-[0_20px_38px_-22px_rgba(0,0,0,0.28)]"
     >
-      {/* clan accent hairline, drawn on hover */}
-      <span aria-hidden className={`absolute inset-x-0 top-0 z-10 h-px origin-left scale-x-0 bg-current ${clan} transition-transform duration-300 group-hover:scale-x-100`} />
+      {/* clan accent bar, drawn on hover */}
+      <span aria-hidden className={`absolute inset-x-0 top-0 z-10 h-[3px] origin-left scale-x-0 bg-current ${clan} transition-transform duration-300 group-hover:scale-x-100`} />
 
       <div className="relative aspect-square overflow-hidden bg-bg-2">
         <Image
@@ -27,14 +27,14 @@ export function TokenCard({ t }: { t: TokenRow }) {
           sizes="(max-width:640px) 50vw, 220px"
           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.05]"
         />
-        <span aria-hidden className="absolute inset-0 ring-1 ring-inset ring-white/[0.06]" />
+        <span aria-hidden className="absolute inset-0 ring-1 ring-inset ring-black/[0.04]" />
       </div>
 
       <div className="p-3">
-        <div className="truncate font-display text-[15px] leading-tight text-ink">{t.name}</div>
-        <div className="mt-2 flex items-center justify-between">
+        <div className="truncate font-display text-[14px] font-semibold text-ink">{t.name}</div>
+        <div className="mt-1.5 flex items-center justify-between">
           <span className="text-[11px] tabular-nums text-faint">#{t.token_id}</span>
-          <span className={`inline-flex items-center gap-1.5 rounded-full border border-line bg-bg-2 px-2 py-0.5 text-[10px] font-medium ${clan}`}>
+          <span className={`inline-flex items-center gap-1.5 rounded-full border border-line bg-bg-2 px-2 py-0.5 text-[10px] font-bold ${clan}`}>
             <span aria-hidden className="h-1 w-1 rounded-full bg-current" />
             {t.clan || "—"}
           </span>

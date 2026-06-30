@@ -18,14 +18,14 @@ export function StatRangeFilter() {
   }
   return (
     <details key={sp.toString()} className="group border-b border-line py-2.5">
-      <summary className="flex cursor-pointer items-center justify-between text-[11px] font-semibold uppercase tracking-[0.12em] text-muted transition-colors hover:text-ink">
+      <summary className="flex cursor-pointer items-center justify-between text-[11px] font-bold uppercase tracking-[0.1em] text-muted transition-colors hover:text-ink">
         ステータス · 5遁術
         <span aria-hidden className="text-faint transition-transform duration-200 group-open:rotate-90">›</span>
       </summary>
       <div className="mt-2.5 space-y-1.5">
         {STAT_FIELDS.map((s) => (
           <div key={s} className="flex items-center gap-1.5 text-xs">
-            <span className={`w-12 text-[10px] uppercase tracking-wide ${ELEMENT[s] ?? "text-muted"}`}>{s}</span>
+            <span className={`w-12 text-[10px] font-bold uppercase tracking-wide ${ELEMENT[s] ?? "text-muted"}`}>{s}</span>
             <input type="number" min={1} max={10} placeholder="min" defaultValue={sp.get(`${s}_min`) ?? ""}
               onBlur={(e) => set(`${s}_min`, e.target.value)} className="w-10 px-1.5 py-1 text-center text-[11px] tabular-nums" />
             <span aria-hidden className="text-faint">–</span>

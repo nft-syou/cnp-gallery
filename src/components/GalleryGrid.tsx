@@ -17,10 +17,10 @@ export function GalleryGrid({ tokens, nextHref }: { tokens: TokenRow[]; nextHref
         <div className="mt-10 text-center">
           <a
             href={nextHref}
-            className="group inline-flex items-center gap-2 rounded-full border border-line-2 px-7 py-2.5 text-sm tracking-wide text-ink transition-colors hover:border-shu hover:text-shu-soft"
+            className="group inline-flex items-center gap-2 rounded-full bg-cnp px-8 py-3 text-sm font-bold text-ink shadow-[0_12px_26px_-12px_rgba(255,202,0,0.95)] transition hover:-translate-y-0.5 hover:bg-cnp-deep"
           >
             もっと見る
-            <span aria-hidden className="text-faint transition group-hover:translate-y-0.5 group-hover:text-shu-soft">↓</span>
+            <span aria-hidden className="transition group-hover:translate-y-0.5">↓</span>
           </a>
         </div>
       )}

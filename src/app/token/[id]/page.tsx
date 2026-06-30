@@ -41,13 +41,13 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
 
   return (
     <main className="mx-auto w-full max-w-5xl px-5 pb-16 pt-8">
-      <Link href="/" className="inline-flex items-center gap-1.5 text-xs tracking-wide text-muted transition-colors hover:text-ink">
+      <Link href="/" className="inline-flex items-center gap-1.5 text-xs font-medium tracking-wide text-muted transition-colors hover:text-ink">
         <span aria-hidden>←</span> ギャラリーへ戻る
       </Link>
 
       <div className="mt-5 grid gap-8 md:grid-cols-2">
         {/* artwork */}
-        <div className="reveal overflow-hidden rounded-card border border-line bg-bg-2 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.9)]">
+        <div className="reveal overflow-hidden rounded-card border border-line bg-surface shadow-[0_34px_64px_-34px_rgba(0,0,0,0.3)]">
           <Image src={t.image_url} alt={t.name} width={1024} height={1024}
             sizes="(max-width:768px) 100vw, 50vw"
             className="aspect-square w-full object-cover" />
@@ -57,19 +57,21 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
         <div className="reveal" style={{ animationDelay: "70ms" }}>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <span className={`inline-flex items-center gap-1.5 rounded-full border border-line bg-bg-2 px-2.5 py-0.5 text-[11px] font-medium ${clan}`}>
+              <span className={`inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-0.5 text-[11px] font-bold ${clan}`}>
                 <span aria-hidden className="h-1 w-1 rounded-full bg-current" />
                 {t.clan || "—"} 一族
               </span>
-              <h1 className="mt-2.5 font-display text-[28px] leading-tight text-ink">{t.name}</h1>
-              <p className="mt-1 text-xs tabular-nums tracking-wide text-faint">TOKEN #{t.token_id}</p>
+              <h1 className="mt-2.5 font-display text-[26px] font-black leading-tight text-ink">
+                <span className="marker">{t.name}</span>
+              </h1>
+              <p className="mt-1.5 text-xs font-medium tabular-nums tracking-wide text-faint">TOKEN #{t.token_id}</p>
             </div>
             <RefreshButton tokenId={t.token_id} />
           </div>
 
           {/* 5 遁術 radar */}
-          <section className="mt-6 rounded-2xl border border-line bg-surface/50 p-4">
-            <div className="mb-1 text-[10px] uppercase tracking-[0.25em] text-faint">五遁術 · Ninjutsu</div>
+          <section className="mt-6 rounded-2xl border border-line bg-surface p-4">
+            <div className="mb-1 text-[10px] uppercase tracking-[0.22em] text-faint">五遁術 · Ninjutsu</div>
             <StatRadar data={toRadarData(t)} />
           </section>
 
@@ -79,8 +81,8 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
               const value = (t[f] as string) || "";
               return (
                 <div key={f} className="bg-surface px-3 py-2.5">
-                  <dt className="text-[9.5px] uppercase tracking-[0.12em] text-faint">{f.replace(/_/g, " · ")}</dt>
-                  <dd className={`mt-0.5 truncate text-sm font-medium ${value ? "text-ink" : "text-faint"}`}>{value || "なし"}</dd>
+                  <dt className="text-[9.5px] font-bold uppercase tracking-[0.1em] text-faint">{f.replace(/_/g, " · ")}</dt>
+                  <dd className={`mt-0.5 truncate text-sm font-semibold ${value ? "text-ink" : "text-faint"}`}>{value || "なし"}</dd>
                 </div>
               );
             })}

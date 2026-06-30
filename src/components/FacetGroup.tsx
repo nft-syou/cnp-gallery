@@ -17,11 +17,11 @@ export function FacetGroup({ field, label, facets, selected }:
 
   return (
     <details className="group border-b border-line py-2.5" open>
-      <summary className="flex cursor-pointer items-center justify-between text-[11px] font-semibold uppercase tracking-[0.12em] text-muted transition-colors hover:text-ink">
+      <summary className="flex cursor-pointer items-center justify-between text-[11px] font-bold uppercase tracking-[0.1em] text-muted transition-colors hover:text-ink">
         <span className="inline-flex items-center gap-1.5">
           {label}
           {selected.length > 0 && (
-            <span className="rounded-full bg-shu/15 px-1.5 text-[9px] font-bold leading-[14px] text-shu-soft">{selected.length}</span>
+            <span className="rounded-full bg-cnp px-1.5 text-[9px] font-bold leading-[14px] text-ink">{selected.length}</span>
           )}
         </span>
         <span aria-hidden className="text-faint transition-transform duration-200 group-open:rotate-90">›</span>
@@ -31,7 +31,7 @@ export function FacetGroup({ field, label, facets, selected }:
           const on = selected.includes(f.value);
           return (
             <label key={f.value}
-              className={`flex cursor-pointer items-center gap-2 py-1 text-xs transition-colors ${on ? "text-ink" : "text-muted hover:text-ink"}`}>
+              className={`flex cursor-pointer items-center gap-2 py-1 text-xs transition-colors ${on ? "font-medium text-ink" : "text-muted hover:text-ink"}`}>
               <input type="checkbox" checked={on} onChange={() => toggle(f.value)} />
               <span className="truncate">{f.value}</span>
               <span className="ml-auto text-[10px] tabular-nums text-faint">{f.n.toLocaleString()}</span>

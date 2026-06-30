@@ -27,52 +27,50 @@ export default async function Home({ searchParams }:
   }
 
   return (
-    <main className="max-w-6xl w-full mx-auto px-5 pt-9 pb-24 md:pb-16">
+    <main className="mx-auto w-full max-w-6xl px-5 pt-9 pb-24 md:pb-16">
       {/* ---- masthead ---- */}
       <header className="flex flex-wrap items-end justify-between gap-5 pb-7">
-        <div className="flex items-center gap-4">
-          <span
-            aria-hidden
-            className="seal grid place-items-center w-12 h-12 rounded-[14px] bg-shu text-2xl font-display font-semibold text-[#1b0c08] shadow-[0_8px_30px_-8px_rgba(239,75,58,0.7)] ring-1 ring-shu-soft/40"
-          >
+        <div className="flex items-center gap-3.5">
+          <span aria-hidden
+            className="seal grid h-11 w-11 place-items-center rounded-[13px] bg-cnp font-display text-xl font-black text-ink shadow-[0_10px_26px_-8px_rgba(255,202,0,0.95)]">
             忍
           </span>
           <div>
-            <h1 className="font-display text-3xl/none tracking-tight text-ink">
-              CNP <span className="italic font-medium text-shu-soft">Gallery</span>
+            <h1 className="font-display text-[30px] font-black leading-none tracking-tight text-ink">
+              CNP <span className="marker">Gallery</span>
             </h1>
-            <p className="mt-1.5 text-[11px] tracking-[0.28em] text-faint uppercase">
-              墨と遁 — CryptoNinja Partners
+            <p className="mt-2 text-[11px] uppercase tracking-[0.2em] text-muted">
+              CryptoNinja Partners · 22,222 revealed
             </p>
           </div>
         </div>
 
         <form action="/token" className="relative w-full sm:w-auto">
           <label htmlFor="token-search" className="sr-only">token ID で検索</label>
-          <span aria-hidden className="absolute left-3.5 top-1/2 -translate-y-1/2 text-faint text-sm">⌕</span>
+          <span aria-hidden className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-faint">⌕</span>
           <input
             id="token-search"
             name="id"
             inputMode="numeric"
             placeholder="token ID を入力"
-            className="w-full rounded-full border border-line bg-surface py-2 pl-9 pr-4 text-sm text-ink transition-colors placeholder:text-faint focus:border-shu focus:bg-surface-2 focus:outline-none sm:w-56 sm:max-w-[60vw]"
+            className="w-full rounded-full border border-line-2 bg-white py-2 pl-9 pr-4 text-sm text-ink transition focus:border-cnp-deep focus:shadow-[0_0_0_3px_rgba(255,214,0,0.25)] focus:outline-none sm:w-56 sm:max-w-[60vw]"
           />
         </form>
       </header>
 
       {/* ---- count rule ---- */}
-      <div className="flex items-baseline gap-3 border-t border-line pt-3 mb-6">
-        <span className="font-display text-2xl text-ink tabular-nums leading-none">
+      <div className="mb-6 flex items-baseline gap-3 border-t border-line pt-3">
+        <span className="font-display text-2xl font-black leading-none tabular-nums text-ink">
           {total.toLocaleString()}
         </span>
-        <span className="text-xs text-muted tracking-wide">体を収蔵</span>
-        <span className="ml-auto text-[11px] text-faint tracking-[0.2em] uppercase">Revealed Collection</span>
+        <span className="text-xs text-muted">体を収蔵</span>
+        <span className="ml-auto text-[11px] uppercase tracking-[0.2em] text-faint">Revealed Collection</span>
       </div>
 
       {/* ---- body ---- */}
-      <div className="flex gap-7 items-start">
+      <div className="flex items-start gap-7">
         <FilterSidebar facets={facetData} filters={filters} />
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <GalleryGrid tokens={page} nextHref={nextHref} />
         </div>
       </div>

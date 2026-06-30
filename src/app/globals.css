@@ -1,99 +1,91 @@
 @import "tailwindcss";
 
 /* ============================================================
-   墨と遁  ·  Ink & Element
-   A dark, gallery-grade theme for CryptoNinja Partners.
-   The NFT art is the hero; ink-black canvas, vermilion (朱) seal
-   accent, and the five 遁術 elements carry the colour.
+   CNP Gallery — brand-aligned theme
+   Matches the official CryptoNinja Partners site: bright off-white
+   canvas, the signature CNP yellow (#FFD600) as hero accent with a
+   highlighter-marker motif, Inter + a Japanese system stack, flat &
+   friendly. The colourful NFT art pops on the light ground.
    ============================================================ */
 @theme {
-  /* surfaces — sumi ink */
-  --color-bg:        #0b0b0f;
-  --color-bg-2:      #0f0f15;
-  --color-surface:   #14141c;
-  --color-surface-2: #1b1b25;
-  --color-line:      #26262f;
-  --color-line-2:    #34343f;
+  /* surfaces — warm paper */
+  --color-bg:        #fbfaf5;
+  --color-bg-2:      #f4f2ea;
+  --color-surface:   #ffffff;
+  --color-surface-2: #fcfbf6;
+  --color-line:      #eae8df;
+  --color-line-2:    #ddd9cd;
 
   /* type */
-  --color-ink:    #f4f0e7;   /* warm off-white */
-  --color-muted:  #9b958b;
-  --color-faint:  #615d57;
+  --color-ink:    #1d1b16;
+  --color-muted:  #6c685f;
+  --color-faint:  #a29d92;
 
-  /* signature accent — 朱 vermilion + 金 gold */
-  --color-shu:      #ef4b3a;
-  --color-shu-soft: #ff7361;
-  --color-gold:     #e6c14a;
+  /* signature — CNP yellow */
+  --color-cnp:      #ffd600;
+  --color-cnp-deep: #ffca00;
+  --color-link:     #0055a4;
+  --color-burnt:    #b34700;
 
-  /* 遁術 — the five elements */
-  --color-katon:   #ef5339;  /* 火 */
-  --color-suiton:  #4193e6;  /* 水 */
-  --color-doton:   #c2954e;  /* 土 */
-  --color-kinton:  #e6c14a;  /* 金 */
-  --color-mokuton: #5fb06a;  /* 木 */
+  /* pastel tints */
+  --color-cream: #fff8d6;
+  --color-peach: #ffe8d6;
+  --color-sky:   #d6eeff;
+
+  /* 遁術 — the five elements (bright pop) */
+  --color-katon:   #ff5a3c;  /* 火 */
+  --color-suiton:  #2e8fe6;  /* 水 */
+  --color-doton:   #c98a3e;  /* 土 */
+  --color-kinton:  #efb301;  /* 金 */
+  --color-mokuton: #41ad5d;  /* 木 */
 
   /* clans */
-  --color-iga:   #ef4b3a;
-  --color-koka:  #2fb3a6;
-  --color-fuma:  #9b6cff;
-  --color-saika: #e6a23c;
+  --color-iga:   #e8513a;
+  --color-koka:  #14a89f;
+  --color-fuma:  #7c5cf0;
+  --color-saika: #ed9a13;
 
-  --radius-card: 14px;
-
-  --font-display: var(--font-fraunces), "Times New Roman", serif;
-  --font-sans: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic",
-    "YuGothic", "Noto Sans JP", "Meiryo", system-ui, -apple-system, sans-serif;
+  --radius-card: 16px;
+  --font-display: var(--font-inter), system-ui, sans-serif;
+  --font-sans: var(--font-inter), "Hiragino Kaku Gothic ProN", "Hiragino Sans",
+    "Yu Gothic", "YuGothic", "Noto Sans JP", "Meiryo", system-ui, sans-serif;
 }
 
 /* ---------------------------------------------- base */
-html { color-scheme: dark; }
+html { color-scheme: light; }
 
 body {
   background-color: var(--color-bg);
   color: var(--color-ink);
   font-family: var(--font-sans);
-  font-feature-settings: "palt" 1; /* tighter JP kerning */
+  font-feature-settings: "palt" 1;
   -webkit-font-smoothing: antialiased;
-  /* atmosphere — a faint vermilion dawn, top-right; cool counter-glow, left */
+  /* friendly atmosphere — a soft yellow sun, top-right; pale-blue, left */
   background-image:
-    radial-gradient(1200px 560px at 78% -10%, rgba(239, 75, 58, 0.11), transparent 62%),
-    radial-gradient(900px 520px at -8% 4%, rgba(65, 147, 230, 0.06), transparent 58%);
+    radial-gradient(1200px 540px at 82% -12%, rgba(255, 214, 0, 0.20), transparent 60%),
+    radial-gradient(900px 480px at -6% -2%, rgba(214, 238, 255, 0.55), transparent 56%);
   background-attachment: fixed;
 }
 
-/* grain — a hair of texture so the dark never reads as flat */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.04;
-  mix-blend-mode: screen;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
+::selection { background: var(--color-cnp); color: var(--color-ink); }
 
-/* keep real content above the atmosphere layers */
-body > * { position: relative; z-index: 1; }
-
-::selection { background: rgba(239, 75, 58, 0.32); color: #fff; }
-
-/* refined scrollbars (filter lists, page) */
 * { scrollbar-width: thin; scrollbar-color: var(--color-line-2) transparent; }
 *::-webkit-scrollbar { width: 9px; height: 9px; }
 *::-webkit-scrollbar-thumb { background: var(--color-line-2); border-radius: 9px; border: 2px solid transparent; background-clip: content-box; }
 *::-webkit-scrollbar-thumb:hover { background: var(--color-faint); }
 
+/* the CNP highlighter-marker — a yellow swipe behind inline text */
+.marker {
+  background-image: linear-gradient(transparent 56%, var(--color-cnp) 56%, var(--color-cnp) 92%, transparent 92%);
+  background-repeat: no-repeat;
+  padding-inline: 0.08em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
 /* ---------------------------------------------- motion */
-@keyframes rise {
-  from { opacity: 0; transform: translateY(12px) scale(0.985); }
-  to   { opacity: 1; transform: none; }
-}
-@keyframes seal-in {
-  0%   { opacity: 0; transform: rotate(-12deg) scale(0.6); }
-  60%  { opacity: 1; transform: rotate(4deg) scale(1.06); }
-  100% { opacity: 1; transform: none; }
-}
+@keyframes rise   { from { opacity: 0; transform: translateY(12px) scale(0.985); } to { opacity: 1; transform: none; } }
+@keyframes seal-in { 0% { opacity: 0; transform: rotate(-12deg) scale(0.6); } 60% { opacity: 1; transform: rotate(4deg) scale(1.06); } 100% { opacity: 1; transform: none; } }
 @keyframes drawer-in { from { transform: translateX(-100%); } to { transform: none; } }
 @keyframes fade-in   { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: no-preference) {
@@ -103,42 +95,43 @@ body > * { position: relative; z-index: 1; }
   .drawer-backdrop { animation: fade-in 0.2s ease both; }
 }
 
-/* ---------------------------------------------- form controls (dark) */
+/* ---------------------------------------------- form controls (light) */
 input[type="checkbox"] {
   appearance: none;
-  width: 14px; height: 14px;
-  border: 1px solid var(--color-line-2);
-  border-radius: 4px;
-  background: var(--color-bg-2);
+  width: 15px; height: 15px;
+  border: 1.5px solid var(--color-line-2);
+  border-radius: 5px;
+  background: #fff;
   cursor: pointer;
   flex: none;
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
 }
-input[type="checkbox"]:hover { border-color: var(--color-muted); }
+input[type="checkbox"]:hover { border-color: var(--color-faint); }
 input[type="checkbox"]:checked {
-  background: var(--color-shu);
-  border-color: var(--color-shu);
-  box-shadow: 0 0 0 3px rgba(239, 75, 58, 0.18);
+  background: var(--color-cnp);
+  border-color: var(--color-cnp-deep);
+  box-shadow: 0 0 0 3px rgba(255, 214, 0, 0.28);
 }
 input[type="checkbox"]:checked::after {
   content: "";
   display: block;
   width: 4px; height: 8px;
-  margin: 0.5px auto 0;
-  border: solid #1a0d0a;
+  margin: 1px auto 0;
+  border: solid var(--color-ink);
   border-width: 0 2px 2px 0;
   transform: rotate(42deg);
 }
 input[type="number"] {
-  background: var(--color-bg-2);
-  border: 1px solid var(--color-line);
-  border-radius: 7px;
+  background: #fff;
+  border: 1px solid var(--color-line-2);
+  border-radius: 8px;
   color: var(--color-ink);
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
-input[type="number"]:focus { outline: none; border-color: var(--color-shu); }
-input[type="text"], input:not([type]) {
-  color: var(--color-ink);
+input[type="number"]:focus {
+  outline: none;
+  border-color: var(--color-cnp-deep);
+  box-shadow: 0 0 0 3px rgba(255, 214, 0, 0.25);
 }
 input::placeholder { color: var(--color-faint); }
 
