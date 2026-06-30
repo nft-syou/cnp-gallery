@@ -1,0 +1,24 @@
+# Cloudflare Workers Static Assets — custom response headers.
+# Copied to .open-next/assets/_headers at build and applied by the edge.
+
+# Content-hashed build output (CSS, JS chunks, next/font files): the filename
+# changes whenever the bytes do, so it is safe to cache forever.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Root brand assets are NOT content-hashed — cache a week and revalidate.
+# If one must change sooner, rename it (or shorten this) on the next deploy.
+/logo.png
+  Cache-Control: public, max-age=604800
+/logo-light.png
+  Cache-Control: public, max-age=604800
+/og.png
+  Cache-Control: public, max-age=604800
+
+# Icons effectively never change.
+/icon.png
+  Cache-Control: public, max-age=2592000
+/apple-icon.png
+  Cache-Control: public, max-age=2592000
+/favicon.ico
+  Cache-Control: public, max-age=2592000

@@ -58,7 +58,7 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
       <div className="flex items-center justify-between gap-3">
         <Link href="/" aria-label="CNP Gallery トップ（絞り込みを解除）" className="inline-flex rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cnp-deep">
           <Image src="/logo.png" alt="CNP Gallery" width={480} height={159} priority unoptimized className="h-8 w-auto sm:h-9 dark:hidden" />
-          <Image src="/logo-light.png" alt="CNP Gallery" width={480} height={159} priority unoptimized className="hidden h-8 w-auto sm:h-9 dark:block" />
+          <Image src="/logo-light.png" alt="CNP Gallery" width={480} height={159} loading="lazy" unoptimized className="hidden h-8 w-auto sm:h-9 dark:block" />
         </Link>
         <ThemeToggle />
       </div>
