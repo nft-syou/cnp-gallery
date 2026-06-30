@@ -12,10 +12,34 @@ const inter = Inter({
   display: "swap",
 });
 
+const SITE = "https://cnp-gallery.syou.io";
+const TITLE = "CNP Gallery — CryptoNinja Partners NFT ギャラリー";
+const DESCRIPTION =
+  "CryptoNinja Partners (CNP) NFT ギャラリー。リビール済み 22,222 体を、トレイトと 5 遁術ステータスで高速に絞り込み・検索できます。";
+
 export const metadata: Metadata = {
-  title: "CNP Gallery",
-  description:
-    "CryptoNinja Partners (CNP) NFT ギャラリー — リビール済み 22,222 体を高速に閲覧・絞り込み",
+  metadataBase: new URL(SITE),
+  title: TITLE,
+  description: DESCRIPTION,
+  applicationName: "CNP Gallery",
+  keywords: ["CNP", "CryptoNinja Partners", "クリプトニンジャパートナーズ", "NFT", "ギャラリー", "忍術", "遁術", "CryptoNinja"],
+  alternates: { canonical: "/" },
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    siteName: "CNP Gallery",
+    title: TITLE,
+    description: DESCRIPTION,
+    url: SITE,
+    locale: "ja_JP",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "CNP Gallery" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/og.png"],
+  },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "48x48" },
@@ -35,7 +59,7 @@ export default function RootLayout({
         <footer className="mt-auto border-t border-line">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-7 text-xs text-faint">
             <span className="font-display font-extrabold tracking-tight text-muted">CNP Gallery</span>
-            <span className="tracking-wide">22,222 revealed · CryptoNinja&nbsp;Partners</span>
+            <span className="tracking-wide">CryptoNinja Partners</span>
           </div>
         </footer>
       </body>

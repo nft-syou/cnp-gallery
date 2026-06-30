@@ -31,12 +31,19 @@ async function getTokenUncached(id: number): Promise<TokenRow | null> {
 
 export interface Facet { value: string; n: number }
 async function facetsUncached(f: Filters): Promise<Record<CategoricalField, Facet[]>> {
-  const out = {} as Record<CategoricalField, Facet[]>;
-  for (const field of CATEGORICAL_FIELDS) {
+  // All 9 facet GROUP BYs run in ONE D1 round-trip via batch() (previously a
+  // sequential await-loop = 9 round-trips). This is the big first-hit speedup;
+  // repeated filter combos are additionally served from unstable_cache.
+  const d = db();
+  const stmts = CATEGORICAL_FIELDS.map((field) => {
     const { sql, params } = buildFacetQuery(field, f);
-    const r = await db().prepare(sql).bind(...params).all<Facet>();
-    out[field] = (r.results ?? []).filter((x) => x.value && x.value !== "None");
-  }
+    return d.prepare(sql).bind(...params);
+  });
+  const results = await d.batch<Facet>(stmts);
+  const out = {} as Record<CategoricalField, Facet[]>;
+  CATEGORICAL_FIELDS.forEach((field, i) => {
+    out[field] = (results[i].results ?? []).filter((x) => x.value && x.value !== "None");
+  });
   return out;
 }
 
@@ -86,4 +93,15 @@ export function totalCount(f: Filters): Promise<number> {
     ["totalCount", filterKey(f, 0)],
     { tags: [TAG_LIST] },
   )();
+}
+
+// All revealed token ids (ascending) — for the sitemap. The token set is fixed
+// (no burns), so this is effectively immutable; cached under TAG_LIST.
+function allTokenIdsUncached(): Promise<number[]> {
+  return db().prepare("SELECT token_id FROM tokens ORDER BY token_id")
+    .all<{ token_id: number }>()
+    .then((r) => (r.results ?? []).map((x) => x.token_id));
+}
+export function allTokenIds(): Promise<number[]> {
+  return unstable_cache(allTokenIdsUncached, ["allTokenIds"], { tags: [TAG_LIST] })();
 }

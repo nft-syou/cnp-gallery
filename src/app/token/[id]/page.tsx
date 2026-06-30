@@ -27,8 +27,16 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   if (!t) return { title: "Not found | CNP Gallery" };
   return {
     title: `${t.name} | CNP Gallery`,
+    description: `${t.name}（CLAN: ${t.clan || "—"}）— CNP Gallery で CryptoNinja Partners #${t.token_id} のトレイトと5遁術ステータスを見る。`,
+    alternates: { canonical: `/token/${t.token_id}` },
     // OGP crawlers fetch the origin URL directly; the CF image loader is client-side only
-    openGraph: { title: t.name, images: [t.image_url] },
+    openGraph: {
+      type: "article",
+      title: t.name,
+      description: `CryptoNinja Partners #${t.token_id} · CLAN ${t.clan || "—"}`,
+      url: `/token/${t.token_id}`,
+      images: [{ url: t.image_url, width: 1000, height: 1000, alt: t.name }],
+    },
     twitter: { card: "summary_large_image", title: t.name, images: [t.image_url] },
   };
 }
@@ -45,12 +53,12 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
         <span aria-hidden>←</span> ギャラリーへ戻る
       </Link>
 
-      <div className="mt-5 grid gap-8 md:grid-cols-2">
+      <div className="mt-5 grid items-start gap-8 md:grid-cols-2">
         {/* artwork */}
         <div className="reveal overflow-hidden rounded-card border border-line bg-surface shadow-[0_34px_64px_-34px_rgba(0,0,0,0.3)]">
           <Image src={t.image_url} alt={t.name} width={1024} height={1024}
             sizes="(max-width:768px) 100vw, 50vw"
-            className="aspect-square w-full object-cover" />
+            className="block aspect-square w-full object-cover" />
         </div>
 
         {/* dossier */}
@@ -59,19 +67,30 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
             <div className="min-w-0">
               <span className={`inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-0.5 text-[11px] font-bold ${clan}`}>
                 <span aria-hidden className="h-1 w-1 rounded-full bg-current" />
-                {t.clan || "—"} 一族
+                {t.clan || "—"}
               </span>
               <h1 className="mt-2.5 font-display text-[26px] font-black leading-tight text-ink">
                 <span className="marker">{t.name}</span>
               </h1>
               <p className="mt-1.5 text-xs font-medium tabular-nums tracking-wide text-faint">TOKEN #{t.token_id}</p>
             </div>
-            <RefreshButton tokenId={t.token_id} />
+            <div className="flex flex-none items-center gap-2">
+              <a
+                href={`/api/tokens/${t.token_id}/image`}
+                download={`cnp-${t.token_id}.png`}
+                className="inline-flex items-center gap-1.5 rounded-full border border-line-2 px-3.5 py-1.5 text-xs font-bold text-muted transition-colors hover:border-cnp-deep hover:bg-cnp/25 hover:text-ink"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16" />
+                </svg>
+                画像
+              </a>
+              <RefreshButton tokenId={t.token_id} />
+            </div>
           </div>
 
           {/* 5 遁術 radar */}
           <section className="mt-6 rounded-2xl border border-line bg-surface p-4">
-            <div className="mb-1 text-[10px] uppercase tracking-[0.22em] text-faint">五遁術 · Ninjutsu</div>
             <StatRadar data={toRadarData(t)} />
           </section>
 
