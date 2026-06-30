@@ -66,15 +66,9 @@ export default async function Home({ searchParams }:
         </div>
       </header>
 
-      {/* ---- count rule + sort ---- */}
-      <div className="mb-6 flex items-center gap-3 border-t border-line pt-3">
-        <span className="font-display text-2xl font-black leading-none tabular-nums text-ink">
-          {total.toLocaleString()}
-        </span>
-        <span className="text-xs text-muted">体を収蔵</span>
-        <div className="ml-auto">
-          <SortControl sort={filters.sort} />
-        </div>
+      {/* ---- sort ---- */}
+      <div className="mb-6 flex items-center justify-end border-t border-line pt-3">
+        <SortControl sort={filters.sort} />
       </div>
 
       {/* ---- body ---- */}
