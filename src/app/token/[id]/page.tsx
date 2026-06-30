@@ -109,7 +109,7 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
           <h1 className="mt-2.5 font-display text-[26px] font-black leading-tight text-ink">
             <span className="marker">{t.name}</span>
           </h1>
-          <p className="mt-1.5 text-xs font-medium tabular-nums tracking-wide text-faint">TOKEN #{t.token_id}</p>
+          <p className="mt-1.5 text-xs font-medium tabular-nums tracking-wide text-muted">TOKEN #{t.token_id}</p>
 
           {/* actions: marketplace (primary) + original image + metadata refresh */}
           <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -148,8 +148,8 @@ export default async function TokenPage({ params }: { params: Promise<{ id: stri
               const value = (t[f] as string) || "";
               return (
                 <div key={f} className="bg-surface px-3 py-2.5">
-                  <dt className="text-[9.5px] font-bold uppercase tracking-[0.1em] text-faint">{f.replace(/_/g, " · ")}</dt>
-                  <dd className={`mt-0.5 truncate text-sm font-semibold ${value ? "text-ink" : "text-faint"}`}>{value || "なし"}</dd>
+                  <dt className="text-[9.5px] font-bold uppercase tracking-[0.1em] text-muted">{f.replace(/_/g, " · ")}</dt>
+                  <dd className={`mt-0.5 truncate text-sm font-semibold ${value ? "text-ink" : "text-muted"}`}>{value || "なし"}</dd>
                 </div>
               );
             })}

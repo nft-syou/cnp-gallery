@@ -41,7 +41,7 @@ export function FilterSidebar({ facets, filters }:
     <>
       {/* ≥ md: sticky sidebar */}
       <aside className="sticky top-6 hidden max-h-[calc(100vh-3rem)] w-44 flex-none overflow-auto rounded-2xl border border-line bg-surface/80 p-4 backdrop-blur-sm md:block md:w-52">
-        <div className="mb-1 text-[10px] uppercase tracking-[0.22em] text-faint">絞り込み · Filter</div>
+        <div className="mb-1 text-[10px] uppercase tracking-[0.22em] text-muted">絞り込み · Filter</div>
         {groups}
       </aside>
 
@@ -68,7 +68,7 @@ export function FilterSidebar({ facets, filters }:
             <div className="flex items-center justify-between border-b border-line px-4 py-3">
               <span className="text-[11px] uppercase tracking-[0.2em] text-muted">絞り込み · Filter</span>
               <button type="button" onClick={() => setOpen(false)} aria-label="閉じる"
-                className="text-lg leading-none text-faint transition-colors hover:text-ink">✕</button>
+                className="text-lg leading-none text-muted transition-colors hover:text-ink">✕</button>
             </div>
             <div className="flex-1 overflow-auto px-4 pb-4 pt-1">{groups}</div>
             <div className="border-t border-line p-3">

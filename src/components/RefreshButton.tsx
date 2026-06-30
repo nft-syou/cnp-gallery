@@ -8,7 +8,7 @@ const LABEL: Record<State, string> = {
 };
 const STYLE: Record<State, string> = {
   idle: "border-line-2 text-muted hover:border-cnp-deep hover:bg-cnp/25 hover:text-ink",
-  loading: "border-line text-faint",
+  loading: "border-line text-muted",
   done: "border-mokuton/45 bg-mokuton/10 text-mokuton",
   error: "border-katon/50 bg-katon/[0.08] text-katon hover:bg-katon/15",
 };

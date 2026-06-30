@@ -71,7 +71,7 @@ export default function RootLayout({
         />
         {children}
         <footer className="mt-auto border-t border-line">
-          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-7 text-xs text-faint">
+          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-7 text-xs text-muted">
             <span className="font-display font-extrabold tracking-tight text-muted">CNP Gallery</span>
             <span className="tracking-wide">CryptoNinja Partners</span>
           </div>

@@ -34,7 +34,7 @@ export function FacetGroup({ field, label, facets, selected }:
               className={`flex cursor-pointer items-center gap-2 py-1 text-xs transition-colors ${on ? "font-medium text-ink" : "text-muted hover:text-ink"}`}>
               <input type="checkbox" checked={on} onChange={() => toggle(f.value)} />
               <span className="truncate">{f.value}</span>
-              <span className="ml-auto text-[10px] tabular-nums text-faint">{f.n.toLocaleString()}</span>
+              <span className="ml-auto text-[10px] tabular-nums text-muted">{f.n.toLocaleString()}</span>
             </label>
           );
         })}
